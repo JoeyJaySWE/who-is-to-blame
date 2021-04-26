@@ -3,8 +3,20 @@
 </p>
 
 # Who's to blame?
+Ready to put your friendship to the limit?
+The Judge have gathered you due to terrbile crime taken place and it's time to put the blame.
+The one who's found guilty will recive the death penalty while the other gets jail time.
+Do your best to prove your innocence and push the blame on your friend, however,
+if the judge catches you in a contradiction, or lie, you the scales of justice may shifts it's
+eyes too look at you instead.
 
-Text about the project and which JavaScript library you're using. This would also be a great place to link the game on Netlify.
+In this game you get access to evidence cards and suspect cards that you can use to shift the blame to another person.
+However, if you are taking the stand and got no more evidence card to back up your claims, or don't have any victims
+on your hand, you will start to look more and more suspicous and the grim reaper get's closer and closer.
+
+OBS! require 3rd party chat program of your chosing to handle conversations, or meet up IRL (the horrror!)
+
+<a href="https://trello.com/b/jIITfXiT/whos-to-blame">Roadmap</a>
 
 # Installation
 
