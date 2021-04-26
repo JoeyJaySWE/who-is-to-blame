@@ -1,4 +1,4 @@
-INSERT MANDATORY GIF
+![](https://media.giphy.com/media/gLv5vBZCnbank4pfJe/giphy.gif)
 
 # Who's to blame?
 
