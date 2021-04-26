@@ -16,7 +16,9 @@ on your hand, you will start to look more and more suspicous and the grim reaper
 
 OBS! require 3rd party chat program of your chosing to handle conversations, or meet up IRL (the horrror!)
 
-<a href="https://trello.com/b/jIITfXiT/whos-to-blame">Roadmap</a>
+<a href="https://trello.com/b/jIITfXiT/whos-to-blame" target="_blank">Roadmap</a>
+
+<a href="https://www.figma.com/file/AS24qhmaGpnj5Vo77Xpedh/Who-s-To-Blame?node-id=0%3A1" target="_blank">Concept Arts</a>
 
 # Installation
 
