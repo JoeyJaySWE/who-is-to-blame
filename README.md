@@ -1,4 +1,6 @@
-![](https://media.giphy.com/media/gLv5vBZCnbank4pfJe/giphy.gif)
+<p align="center">
+  <img src="https://media.giphy.com/media/gLv5vBZCnbank4pfJe/giphy.gif" alt="She did it!" />
+</p>
 
 # Who's to blame?
 
