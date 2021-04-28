@@ -12,7 +12,7 @@ const config = {
     ]
 };
 
-// tested
+// test
 
 
 
