@@ -1,6 +1,6 @@
 export default class Game extends Phaser.Scene {
     constructor(){
-        supper({
+        super({
             key: 'Game'
         });
 
@@ -23,7 +23,22 @@ export default class Game extends Phaser.Scene {
 
         this.input.setDraggable(this.card);
 
+        this.dealCard = () => {
+
+        }
         this.dealText = this.add.text(75, 350, ['Draw Card']).setFont("Tithilum Web","Sans-serif").setColor('#4a0').setInteractive();
+
+        this.dealText.on('pointerdown', function(){
+            gameScene.dealCard();
+        })
+
+        this.dealText.on('pointerover', function () {
+            gameScene.dealText.setColor('#470');
+        })
+
+        this.dealText.on('pointerout', function () {
+            gameScene.dealText.setColor('#4a0');
+        })
     }
 
     update(){
