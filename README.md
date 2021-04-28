@@ -4,17 +4,17 @@
 
 # Who's to blame?
 Ready to put your friendship to the limit?
-The Judge have gathered you due to terrbile crime taken place and it's time to put the blame.
-The one who's found guilty will recive the death penalty while the other gets jail time.
+The Judge has summoned you and your colleagues due to a terrible crime taken place and it's time to blame someone.
+The one who's found guilty will receive the death penalty while the other gets jail time.
 Do your best to prove your innocence and push the blame on your friend, however,
-if the judge catches you in a contradiction, or lie, you the scales of justice may shifts it's
-eyes too look at you instead.
+if the judge catches you in a contradiction, or lie, the scales of justice may shift its
+eyes to look at you instead.
 
-In this game you get access to evidence cards and suspect cards that you can use to shift the blame to another person.
+In this game, you get access to evidence cards and suspect cards that you can use to shift the blame to another person.
 However, if you are taking the stand and got no more evidence card to back up your claims, or don't have any victims
-on your hand, you will start to look more and more suspicous and the grim reaper get's closer and closer.
+on your hand, you will start to look more and more suspicious and the grim reaper gets closer and closer.
 
-OBS! require 3rd party chat program of your chosing to handle conversations, or meet up IRL (the horrror!)
+OBS! require 3rd party chat program of your choosing to handle conversations, or meet up IRL (the horror!)
 
 <a href="https://trello.com/b/jIITfXiT/whos-to-blame" target="_blank">Roadmap</a>
 
