@@ -40,6 +40,9 @@ export default class Game extends Phaser.Scene {
 
         this.dealCard = () => {
             for( let i = 0; i < 3; i++){
+                if(this.playerHand.evdenceCards[i] != null){
+                    continue;
+                }
                 let playerCard = new Card(this, 0.05, 'evidence');
                 
                 this.playerHand.evdenceCards[i] = 
@@ -49,6 +52,9 @@ export default class Game extends Phaser.Scene {
             }
 
             for(let i = 0; i < 3; i++){
+                if(this.playerHand.blameCards[i] != null){
+                    continue;
+                }
                 let playerCard = new Card(this, 0.1, 'blame');
                 
                 let spacing = this.playerHand.evdenceCards.length * 100;
@@ -133,7 +139,9 @@ export default class Game extends Phaser.Scene {
                     gameObject.y = gameObject.input.dragStartY;
                     return;
                 }
-                
+                let missingCard = gameScene.playerHand.evdenceCards.lastIndexOf(gameObject)
+                console.log(gameScene.playerHand.evdenceCards.lastIndexOf(gameObject));
+                gameScene.playerHand.evdenceCards[missingCard] = null;
             }
             else{
                 console.log("Dropped in blame pile");
@@ -143,10 +151,14 @@ export default class Game extends Phaser.Scene {
                     gameObject.y = gameObject.input.dragStartY;
                     return;
                 }
+                let missingCard = gameScene.playerHand.blameCards.lastIndexOf(gameObject)
+                console.log(gameScene.playerHand.blameCards.lastIndexOf(gameObject));
+                gameScene.playerHand.blameCards[missingCard] = null;
             }
 
             // console.log("Dropped on Blame");
             evidenceDropZone.data.values.cards++;
+            
             console.log(gameObject);
             if(gameObject.data.list.cardType === 'blame'){
                 // console.log("Blame card dropped");
