@@ -92,6 +92,9 @@ export default class Game extends Phaser.Scene {
                     gameObject.scale = 0.19;
                     // console.log(gameObject);
                 }
+                else{
+                    gameObject.scale = 0.1;
+                }
                 gameScene.children.bringToTop(gameObject);
 
         })
@@ -99,6 +102,14 @@ export default class Game extends Phaser.Scene {
         this.input.on('dragend', function (pointer, gameObject, dropped) {
             gameObject.setTint();
             if(!dropped){
+                if(gameObject.data.list.cardType === 'blame'){
+                    console.log("Blame card dragged");
+                    gameObject.scale = 0.1;
+                    // console.log(gameObject);
+                }
+                else{
+                    gameObject.scale = 0.05;
+                }
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
             }
@@ -110,29 +121,35 @@ export default class Game extends Phaser.Scene {
             gameObject.y = dragY;
         })
 
-        this.evidenceDropZone.on('drop', function (pointer, gameObject, evidenceDropZone) {
-            console.log("Dropped on Evidence");
-            evidenceDropZone.data.values.cards++;
-            console.log(gameObject);
-            if(gameObject.data.list.cardType === 'blame'){
-                console.log("Blame card dropped");
-                gameObject.scale = 0.19;
-            }
-            else{
 
-                gameObject.scale = 0.1;
-            }
-            gameObject.x = (evidenceDropZone.x+120);
-            gameObject.y = evidenceDropZone.y+180;
-            gameObject.disableInteractive();
-        })
         this.input.on('drop', function (pointer, gameObject, evidenceDropZone) {
             console.log(this.input);
+
+            if(gameObject.x > 300 && gameObject.x < 540){
+                console.log("Dropped in evidence pile");
+                if(gameObject.data.list.cardType !== 'evidence'){
+                    gameObject.scale = 0.1;
+                    gameObject.x = gameObject.input.dragStartX;
+                    gameObject.y = gameObject.input.dragStartY;
+                    return;
+                }
+                
+            }
+            else{
+                console.log("Dropped in blame pile");
+                if(gameObject.data.list.cardType !== 'blame'){
+                    gameObject.scale = 0.05;
+                    gameObject.x = gameObject.input.dragStartX;
+                    gameObject.y = gameObject.input.dragStartY;
+                    return;
+                }
+            }
+
             // console.log("Dropped on Blame");
             evidenceDropZone.data.values.cards++;
             console.log(gameObject);
             if(gameObject.data.list.cardType === 'blame'){
-                console.log("Blame card dropped");
+                // console.log("Blame card dropped");
                 gameObject.scale = 0.19;
             }
             else{
