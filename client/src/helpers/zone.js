@@ -1,8 +1,11 @@
 export default class Zone{
-    constructor(scene, x, y, width, height) {
+    constructor(scene, x, y, width, height, pileType) {
         this.renderZone =  () => {
             let dropZone = scene.add.zone(x, y).setRectangleDropZone(width, height);
-            dropZone.setData({cards: 0});
+            dropZone.setData({
+                cards: 0,
+                pile: pileType
+            });
             console.log(dropZone);
             return dropZone;
         };

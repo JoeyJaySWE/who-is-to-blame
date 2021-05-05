@@ -30,29 +30,30 @@ export default class Game extends Phaser.Scene {
         };
 
 
-        this.evidenceZone = new Zone(this, 300, 200, 240, 360);
+        this.evidenceZone = new Zone(this, 300, 200, 240, 360, "evidence");
         this.evidenceDropZone = this.evidenceZone.renderZone();
         this.outline = this.evidenceZone.renderOutline(this.evidenceDropZone);
 
-        this.blameZone = new Zone(this, 600, 200, 240, 360);
+        this.blameZone = new Zone(this, 600, 200, 240, 360, "blame");
         this.blameDropZone = this.blameZone.renderZone();
         this.outline = this.blameZone.renderOutline(this.blameDropZone);
 
         this.dealCard = () => {
             for( let i = 0; i < 3; i++){
-                let playerCard = new Card(this, 0.05);
+                let playerCard = new Card(this, 0.05, 'evidence');
                 
                 this.playerHand.evdenceCards[i] = 
                 playerCard.render(300 + (i * 100), 670, 'backside');
+
+                console.log(this.playerHand.evdenceCards[i].data.list.cardType);   
             }
 
             for(let i = 0; i < 3; i++){
-                console.log("Second pile");
-                let playerCard = new Card(this, 0.1);
-              
+                let playerCard = new Card(this, 0.1, 'blame');
+                
                 let spacing = this.playerHand.evdenceCards.length * 100;
                 this.playerHand.blameCards[i] = playerCard.render(300 + (i * 100 + spacing), 670, 'blame');
-
+                console.log(this.playerHand.blameCards[i].data.list.cardType);
              
 
             }
@@ -60,12 +61,12 @@ export default class Game extends Phaser.Scene {
         }
 
 
-        // this.playerHand.evidenceCards.on('pointerover', (pointer, gameObject)=> {
-        //    if(gameObject.type === "Image"){
-        //        console.log("img");
-        //    }
-        //     // gameObject. 
-        // })
+        this.input.on('pointerover', (pointer, gameObject)=> {
+           if(gameObject.type === "Image"){
+               console.log("img");
+           }
+            // gameObject. 
+        })
         // this.input.on('pointerout', (gameObject)=> {
         //     gameObject.setScale(0.05,0.05);
         // })
@@ -86,7 +87,11 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('dragstart', function (pointer, gameObject) {
                 gameObject.setTint(0xff69ba);
-                console.log(gameObject);
+                if(gameObject.data.list.cardType === 'blame'){
+                    console.log("Blame card dragged");
+                    gameObject.scale = 0.19;
+                    // console.log(gameObject);
+                }
                 gameScene.children.bringToTop(gameObject);
 
         })
@@ -105,9 +110,35 @@ export default class Game extends Phaser.Scene {
             gameObject.y = dragY;
         })
 
-        this.input.on('drop', function (pointer, gameObject, evidenceDropZone) {
+        this.evidenceDropZone.on('drop', function (pointer, gameObject, evidenceDropZone) {
+            console.log("Dropped on Evidence");
             evidenceDropZone.data.values.cards++;
             console.log(gameObject);
+            if(gameObject.data.list.cardType === 'blame'){
+                console.log("Blame card dropped");
+                gameObject.scale = 0.19;
+            }
+            else{
+
+                gameObject.scale = 0.1;
+            }
+            gameObject.x = (evidenceDropZone.x+120);
+            gameObject.y = evidenceDropZone.y+180;
+            gameObject.disableInteractive();
+        })
+        this.input.on('drop', function (pointer, gameObject, evidenceDropZone) {
+            console.log(this.input);
+            // console.log("Dropped on Blame");
+            evidenceDropZone.data.values.cards++;
+            console.log(gameObject);
+            if(gameObject.data.list.cardType === 'blame'){
+                console.log("Blame card dropped");
+                gameObject.scale = 0.19;
+            }
+            else{
+
+                gameObject.scale = 0.1;
+            }
             gameObject.x = (evidenceDropZone.x+120);
             gameObject.y = evidenceDropZone.y+180;
             gameObject.disableInteractive();
