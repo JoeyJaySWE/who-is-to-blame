@@ -48,7 +48,6 @@ export default class Game extends Phaser.Scene {
                 this.playerHand.evdenceCards[i] = 
                 playerCard.render(300 + (i * 100), 670, 'backside');
 
-                console.log(this.playerHand.evdenceCards[i].data.list.cardType);   
             }
 
             for(let i = 0; i < 3; i++){
@@ -59,7 +58,6 @@ export default class Game extends Phaser.Scene {
                 
                 let spacing = this.playerHand.evdenceCards.length * 100;
                 this.playerHand.blameCards[i] = playerCard.render(300 + (i * 100 + spacing), 670, 'blame');
-                console.log(this.playerHand.blameCards[i].data.list.cardType);
              
 
             }
@@ -67,15 +65,6 @@ export default class Game extends Phaser.Scene {
         }
 
 
-        this.input.on('pointerover', (pointer, gameObject)=> {
-           if(gameObject.type === "Image"){
-               console.log("img");
-           }
-            // gameObject. 
-        })
-        // this.input.on('pointerout', (gameObject)=> {
-        //     gameObject.setScale(0.05,0.05);
-        // })
 
         this.dealText = this.add.text(75, 350, ['Draw Card']).setFont("Tithilum Web","Sans-serif").setFontSize(18).setColor('#4a0').setInteractive();
 
@@ -94,9 +83,8 @@ export default class Game extends Phaser.Scene {
         this.input.on('dragstart', function (pointer, gameObject) {
                 gameObject.setTint(0xff69ba);
                 if(gameObject.data.list.cardType === 'blame'){
-                    console.log("Blame card dragged");
                     gameObject.scale = 0.19;
-                    // console.log(gameObject);
+           
                 }
                 else{
                     gameObject.scale = 0.1;
@@ -109,9 +97,7 @@ export default class Game extends Phaser.Scene {
             gameObject.setTint();
             if(!dropped){
                 if(gameObject.data.list.cardType === 'blame'){
-                    console.log("Blame card dragged");
                     gameObject.scale = 0.1;
-                    // console.log(gameObject);
                 }
                 else{
                     gameObject.scale = 0.05;
@@ -129,10 +115,8 @@ export default class Game extends Phaser.Scene {
 
 
         this.input.on('drop', function (pointer, gameObject, evidenceDropZone) {
-            console.log(this.input);
 
             if(gameObject.x > 300 && gameObject.x < 540){
-                console.log("Dropped in evidence pile");
                 if(gameObject.data.list.cardType !== 'evidence'){
                     gameObject.scale = 0.1;
                     gameObject.x = gameObject.input.dragStartX;
@@ -140,11 +124,9 @@ export default class Game extends Phaser.Scene {
                     return;
                 }
                 let missingCard = gameScene.playerHand.evdenceCards.lastIndexOf(gameObject)
-                console.log(gameScene.playerHand.evdenceCards.lastIndexOf(gameObject));
                 gameScene.playerHand.evdenceCards[missingCard] = null;
             }
             else{
-                console.log("Dropped in blame pile");
                 if(gameObject.data.list.cardType !== 'blame'){
                     gameObject.scale = 0.05;
                     gameObject.x = gameObject.input.dragStartX;
@@ -152,16 +134,14 @@ export default class Game extends Phaser.Scene {
                     return;
                 }
                 let missingCard = gameScene.playerHand.blameCards.lastIndexOf(gameObject)
-                console.log(gameScene.playerHand.blameCards.lastIndexOf(gameObject));
                 gameScene.playerHand.blameCards[missingCard] = null;
             }
 
-            // console.log("Dropped on Blame");
+
             evidenceDropZone.data.values.cards++;
             
-            console.log(gameObject);
             if(gameObject.data.list.cardType === 'blame'){
-                // console.log("Blame card dropped");
+               
                 gameObject.scale = 0.19;
             }
             else{
