@@ -28,6 +28,7 @@ export default class Game extends Phaser.Scene {
             blameCards: [],
 
         };
+ 
 
 
         this.evidenceZone = new Zone(this, 300, 200, 240, 360, "evidence");
@@ -47,8 +48,25 @@ export default class Game extends Phaser.Scene {
                 
                 this.playerHand.evdenceCards[i] = 
                 playerCard.render(300 + (i * 100), 670, 'backside');
+                gameScene.playerHand.evdenceCards[i].on('pointerover', function (){
+                    console.log(this);
+                    this.scale = 0.075;
+                    gameScene.children.bringToTop(this);
+                });
+
+                gameScene.playerHand.evdenceCards[i].on('pointerout', function (){
+                  
+                        console.log(this);
+                        this.scale = 0.05;
+                    
+                    
+                });
 
             }
+
+            console.log(this.playerHand.evdenceCards);
+
+            
 
             for(let i = 0; i < 3; i++){
                 if(this.playerHand.blameCards[i] != null){
@@ -58,6 +76,21 @@ export default class Game extends Phaser.Scene {
                 
                 let spacing = this.playerHand.evdenceCards.length * 100;
                 this.playerHand.blameCards[i] = playerCard.render(300 + (i * 100 + spacing), 670, 'blame');
+
+                gameScene.playerHand.blameCards[i].on('pointerover', function (){
+                    console.log(this);
+                    this.scale = 0.145;
+                    gameScene.children.bringToTop(this);
+                });
+
+                gameScene.playerHand.blameCards[i].on('pointerout', function (){
+                  
+                        console.log(this);
+                        this.scale = 0.1;
+                        
+                    
+                    
+                });
              
 
             }
@@ -113,7 +146,11 @@ export default class Game extends Phaser.Scene {
             gameObject.y = dragY;
         })
 
-
+        if(this.playerHand.evdenceCards[1]){
+            console.log("If works");
+         
+            
+        }
         this.input.on('drop', function (pointer, gameObject, evidenceDropZone) {
 
             if(gameObject.x > 300 && gameObject.x < 540){
@@ -125,6 +162,8 @@ export default class Game extends Phaser.Scene {
                 }
                 let missingCard = gameScene.playerHand.evdenceCards.lastIndexOf(gameObject)
                 gameScene.playerHand.evdenceCards[missingCard] = null;
+                
+                console.log( gameScene.playerHand.evdenceCards);
             }
             else{
                 if(gameObject.data.list.cardType !== 'blame'){
@@ -135,18 +174,40 @@ export default class Game extends Phaser.Scene {
                 }
                 let missingCard = gameScene.playerHand.blameCards.lastIndexOf(gameObject)
                 gameScene.playerHand.blameCards[missingCard] = null;
+
+
+
+               
             }
 
 
-            evidenceDropZone.data.values.cards++;
+            
+
+
             
             if(gameObject.data.list.cardType === 'blame'){
                
                 gameObject.scale = 0.19;
+                console.log( gameScene.blameDropZone.data.list);
+                gameScene.blameDropZone.data.values.cardData.push(gameObject);
+                let pileTopCard = gameScene.blameDropZone.data.values.cardData.length -1;
+                console.log(pileTopCard);
+                gameScene.blameDropZone.data.values.cardData[pileTopCard].on('pointerout', function() {
+                this.scale = 0.19;
+            })
+
             }
             else{
 
                 gameObject.scale = 0.1;
+                evidenceDropZone.data.values.cards++;
+                evidenceDropZone.data.values.cardData.push(gameObject);
+                console.log( evidenceDropZone.data.list);
+                let pileTopCard = evidenceDropZone.data.values.cardData.length -1;
+        
+                evidenceDropZone.data.values.cardData[pileTopCard].on('pointerout', function() {
+                    this.scale = 0.1;
+                })
             }
             gameObject.x = (evidenceDropZone.x+120);
             gameObject.y = evidenceDropZone.y+180;
