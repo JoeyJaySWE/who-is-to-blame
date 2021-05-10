@@ -4,7 +4,8 @@ export default class Zone{
             let dropZone = scene.add.zone(x, y).setRectangleDropZone(width, height);
             dropZone.setData({
                 cards: 0,
-                pile: pileType
+                pile: pileType,
+                cardData: []
             });
 
             return dropZone;
