@@ -1,5 +1,6 @@
 import Card from '../helpers/card';
 import Zone from '../helpers/zone';
+import GameSetUp from '../helpers/hostSetup';
 import io from 'socket.io-client';
 
 export default class Game extends Phaser.Scene {
@@ -19,11 +20,14 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    // let hostUs÷er;
     let gameScene = this;
+    let gameSetup = new GameSetUp(this);
     this.playerHand = {
       evdenceCards: [],
       blameCards: [],
     };
+    this.hostName;
 
     this.evidenceZone = new Zone(this, 300, 200, 240, 360, 'evidence');
     this.evidenceDropZone = this.evidenceZone.renderZone();
@@ -40,6 +44,22 @@ export default class Game extends Phaser.Scene {
       console.log('Connected!');
     });
 
+    this.socket.on('PlayerList', (arg) => {
+      console.log(`All players: ${arg}`);
+    });
+
+    this.socket.on('PlayerLoad', (arg) => {
+      console.log(`Some players: ${arg}`);
+      gameScene.socket.emit('PlayerLoad');
+      //   console.log(`Emitted value recived: ${arg}`);
+
+      //   //   gameScene.hostName = arg.hostName;
+      //   //   console.log(`Host: ${gameScene.hostName}`);
+      //   //   console.log(`Player 2: ${arg.player2}`);
+      //   //   console.log(`Player 3: ${arg.player3}`);
+
+      //   gameSetup.getPlayers(gameScene.hostName);
+    });
     this.dealCard = () => {
       for (let i = 0; i < 3; i++) {
         if (this.playerHand.evdenceCards[i] != null) {

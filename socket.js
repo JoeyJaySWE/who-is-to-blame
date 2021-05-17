@@ -13,11 +13,36 @@ module.exports = {
         origin: 'http://localhost:8080',
       },
     });
+    let players = {
+      hostName: '',
+      player2: '',
+      player3: '',
+    };
 
     io.on('connection', (socket) => {
       socket.username = `user${userCounter}`;
       userCounter++;
+      let hostName;
+      let player2;
+      let player3;
+      switch (socket.username) {
+        case 'user1':
+          players.hostName = socket.username;
+          console.log('User1 ' + players);
+          break;
+
+        case 'user2':
+          players.player2 = socket.username;
+          console.log('User2 ' + players);
+          break;
+
+        case 'user3':
+          players.player3 = socket.username;
+          break;
+      }
+      console.log(players);
       console.log(`${socket.username} connected`);
+      socket.emit('PlayerLoad', JSON.stringify(players));
 
       //   socket.on(DRAW_EVENT, drawController);
 
@@ -25,7 +50,10 @@ module.exports = {
         console.log(`${socket.username} disconnected`);
       });
     });
-
+    io.on('PlayerLoad', () => {
+      console.log('Recived data');
+      socket.emit('PlayerList', JSON.stringify(players));
+    });
     return io;
   },
   getIO: () => {
