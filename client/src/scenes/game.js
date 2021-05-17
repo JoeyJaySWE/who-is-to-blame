@@ -33,7 +33,8 @@ export default class Game extends Phaser.Scene {
     this.blameDropZone = this.blameZone.renderZone();
     this.outline = this.blameZone.renderOutline(this.blameDropZone);
 
-    this.socket = io('http//:localhost:3000');
+    this.socket = io.connect('http://localhost:3000');
+    // const socket = socketIOClient.connect(SERVER_URL);
 
     this.socket.on('connect', () => {
       console.log('Connected!');
