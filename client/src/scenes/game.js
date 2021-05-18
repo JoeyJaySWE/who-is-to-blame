@@ -22,7 +22,7 @@ export default class Game extends Phaser.Scene {
   create() {
     // let hostUs÷er;
     let gameScene = this;
-    let gameSetup = new GameSetUp(this);
+    let gameSetup = new GameSetUp(this, this.socket);
     this.playerHand = {
       evdenceCards: [],
       blameCards: [],
@@ -40,26 +40,39 @@ export default class Game extends Phaser.Scene {
     this.socket = io.connect('http://localhost:3000');
     // const socket = socketIOClient.connect(SERVER_URL);
 
-    this.socket.on('connect', () => {
-      console.log('Connected!');
+    // IF PLAYER JOIN
+    // 1. check if player ain't  host
+    // 2. show name input field
+    // 3. add players input name to players Array
+    // 4. send Players array to back end for storage
+    // 5. update all views with the new array values.
+    // 6. emit to front end.
+    // 7. if player 3 name is true, allow start game
+
+    //Singel views
+    this.socket.on('PlayerView', (player) => {
+      switch (player.hostName) {
+        case '"user1"':
+          console.log(`PlayerView: ${player}`);
+          gameScene.GameSetUp.getPlayers(player);
+
+          break;
+
+        case '"user2"':
+          console.log(`PlayerView: ${player}`);
+
+          break;
+
+        case '"user3"':
+          console.log(`PlayerView: ${player}`);
+
+          break;
+
+        default:
+          console.log(player);
+      }
     });
 
-    this.socket.on('PlayerList', (arg) => {
-      console.log(`All players: ${arg}`);
-    });
-
-    this.socket.on('PlayerLoad', (arg) => {
-      console.log(`Some players: ${arg}`);
-      gameScene.socket.emit('PlayerLoad');
-      //   console.log(`Emitted value recived: ${arg}`);
-
-      //   //   gameScene.hostName = arg.hostName;
-      //   //   console.log(`Host: ${gameScene.hostName}`);
-      //   //   console.log(`Player 2: ${arg.player2}`);
-      //   //   console.log(`Player 3: ${arg.player3}`);
-
-      //   gameSetup.getPlayers(gameScene.hostName);
-    });
     this.dealCard = () => {
       for (let i = 0; i < 3; i++) {
         if (this.playerHand.evdenceCards[i] != null) {

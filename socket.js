@@ -3,8 +3,6 @@ const socketIo = require('socket.io');
 let io;
 let userCounter = 1;
 
-const DRAW_EVENT = 'draw';
-
 module.exports = {
   init: (server) => {
     io = socketIo(server, {
@@ -29,27 +27,40 @@ module.exports = {
         case 'user1':
           players.hostName = socket.username;
           console.log('User1 ' + players);
+          io.sockets.emit('HostJoin', JSON.stringify(players));
           break;
 
         case 'user2':
           players.player2 = socket.username;
           console.log('User2 ' + players);
+          io.sockets.emit('broadcast', JSON.stringify(players.player2));
+          io.sockets.emit('Player2Join', JSON.stringify(players.player2));
           break;
 
         case 'user3':
           players.player3 = socket.username;
+          io.sockets.emit('Player3Join', JSON.stringify(players.player3));
           break;
       }
+      socket.emit('PlayerView', JSON.stringify(socket.username));
       console.log(players);
       console.log(`${socket.username} connected`);
-      socket.emit('PlayerLoad', JSON.stringify(players));
+      io.sockets.emit('PlayerLoad', JSON.stringify(players));
 
       //   socket.on(DRAW_EVENT, drawController);
 
       socket.once('disconnect', () => {
         console.log(`${socket.username} disconnected`);
+        --userCounter;
       });
     });
+
+    io.on('HostNamed', (hostName) => {
+      console.log(`Hostname updated to: ${hostName}`);
+      players.hostName = hostName;
+      console.log(`Players hostname: ${players.hostName}`);
+    });
+
     io.on('PlayerLoad', () => {
       console.log('Recived data');
       socket.emit('PlayerList', JSON.stringify(players));

@@ -1,6 +1,5 @@
 export default class GameSetUp {
-  constructor(gameScene, hostName) {
-    console.log(gameScene.hostName);
+  constructor(gameScene, socket) {
     const popUp = document.querySelector('.pop-up');
     const gameName = document.querySelector('#gameName');
     const hostNameField = document.querySelector('#hostName');
@@ -11,6 +10,11 @@ export default class GameSetUp {
     const title = document.querySelector('h1');
     const gameLnk = document.querySelector('.game-link');
 
+    //get qery string
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let game = urlParams.get('game');
+    console.log(game);
     nameBtn.addEventListener('click', function () {
       if (gameName.value === '') {
         alert('Please input a name for your session.');
@@ -21,7 +25,19 @@ export default class GameSetUp {
         return;
       }
 
-      title.textContent = `${gameName.value} set up!`;
+      gameLnkFields.style.display = 'flex';
+      let gameNameSlug = gameName.value.replace(/\s+/g, '-').toLowerCase();
+      let gameLnkUrl = `${window.location.href}?game=${gameNameSlug}`;
+      console.log(gameLnkUrl);
+      socket.emit('HostNamed', JSON.stringify(hostNameField.value));
+      // window.location.replace(gameLnkUrl);
+
+      gameLnk.textContent = gameLnkUrl;
+      console.log(gameScene.socket);
+    });
+
+    if (game) {
+      title.textContent = `${game} set up!`;
       let playerBox = document.createElement('div');
       playerBox.classList.add('player-box');
       let playerFrame = document.createElement('div');
@@ -29,11 +45,10 @@ export default class GameSetUp {
       playerFrame.textContent = 'Host';
       playerFrame.classList.add('player-frame');
       playerBox.appendChild(playerFrame);
-      playerName.textContent = hostNameField.value;
+      playerName.textContent = gameScene.socket.players.hostName;
       playerName.classList.add('player-name');
       playerBox.appendChild(playerName);
       playerBoxes.appendChild(playerBox);
-
       for (let i = 2; i < 4; i++) {
         playerBox = document.createElement('div');
         playerBox.classList.add('player-box');
@@ -41,7 +56,6 @@ export default class GameSetUp {
         playerFrame.classList.add('player-frame');
         playerName = document.createElement('span');
         playerName.classList.add('player-name');
-
         playerFrame.textContent = `Player ${i}`;
         playerBox.appendChild(playerFrame);
         // if()
@@ -49,21 +63,15 @@ export default class GameSetUp {
         playerBox.appendChild(playerName);
         playerBoxes.appendChild(playerBox);
       }
-
       nameInputs.style.display = 'none';
-      gameLnkFields.style.display = 'flex';
-      let gameNameSlug = gameName.value.replace(/\s+/g, '-').toLowerCase();
-      let gameLnkUrl = `${window.location.href}?${gameNameSlug}`;
-      console.log(gameLnkUrl);
-      gameLnk.textContent = gameLnkUrl;
 
       // TODO:
       // 1. Make this run in Pahser instead.
       // 2. Make a socket controller to see if someones alreayd playing on this session
       //     then add a random numreric value in the end.
-    });
+    }
   }
-  getPlayers(host) {
-    console.log(`Setup Host: ${host}`);
+  getPlayers(player) {
+    console.log(`player: ${player}`);
   }
 }
