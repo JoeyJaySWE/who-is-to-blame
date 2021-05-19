@@ -23,26 +23,29 @@ module.exports = {
       let hostName;
       let player2;
       let player3;
-      switch (socket.username) {
-        case 'user1':
-          players.hostName = socket.username;
-          console.log('User1 ' + players);
-          io.sockets.emit('HostJoin', JSON.stringify(players.hostName));
-          io.sockets.emit('assignPlayers', JSON.stringify(players));
-          break;
 
-        case 'user2':
-          players.player2 = socket.username;
-          console.log('User2 ' + players);
-          io.sockets.emit('broadcast', JSON.stringify(players.player2));
-          io.sockets.emit('Player2Join', JSON.stringify(players.player2));
-          break;
+      socket.emit('playerId', socket.username);
 
-        case 'user3':
-          players.player3 = socket.username;
-          io.sockets.emit('Player3Join', JSON.stringify(players.player3));
-          break;
-      }
+      // switch (socket.username) {
+      //   case 'user1':
+      //     players.hostName = socket.username;
+      //     console.log('User1 ' + players);
+      //     io.sockets.emit('HostJoin', JSON.stringify(players.hostName));
+      //     io.sockets.emit('assignPlayers', JSON.stringify(players));
+      //     break;
+
+      //   case 'user2':
+      //     players.player2 = socket.username;
+      //     console.log('User2 ' + players);
+      //     io.sockets.emit('Player2Join', JSON.stringify(players.player2));
+      //     io.sockets.emit('assignPlayers', JSON.stringify(players));
+      //     break;
+
+      //   case 'user3':
+      //     players.player3 = socket.username;
+      //     io.sockets.emit('Player3Join', JSON.stringify(players.player3));
+      //     break;
+      // }
       socket.emit('PlayerView', JSON.stringify(socket.username));
       console.log(players);
       console.log(`${socket.username} connected`);

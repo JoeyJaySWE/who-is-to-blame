@@ -64,15 +64,14 @@ export default class Game extends Phaser.Scene {
       players = JSON.parse(arg);
       // gameScene.GameSetUp.buildLobby(players);
     });
-
+    this.socket.on('playerId', (arg) => {
+      console.log(`this is playerId ${arg}`);
+    });
     //Singel views
     this.socket.on('PlayerView', (player) => {
-      switch (player.hostName) {
+      switch (player) {
         case '"user1"':
           console.log(`PlayerView: ${player}`);
-          // gameScene.GameSetUp.getPlayers(player);
-          gameScene.GameSetUp.buildLobby(gameScene.players);
-
           break;
 
         case '"user2"':
