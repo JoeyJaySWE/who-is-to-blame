@@ -2,6 +2,7 @@ import Card from '../helpers/card';
 import Zone from '../helpers/zone';
 import GameSetUp from '../helpers/hostSetup';
 import io from 'socket.io-client';
+// import socket from '../../../socket';
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -54,6 +55,20 @@ export default class Game extends Phaser.Scene {
     // 6. emit to front end.
     // 7. if player 3 name is true, allow start game
 
+    //new turn
+    this.socket.on('NewStand', (accused) => {
+      gameScene.onStand = accused;
+      console.log(`Recived ${accused}'s turn.`);
+      gameScene.turnIndicator.text = `${gameScene.onStand} got the stand`;
+
+      if (gameScene.player !== 'user1') {
+        playGame(gameScene.player, gameScene.onStand);
+      }
+      // gameScene.turnIndicator.text(400, 50, [
+      //   `${gameScene.onStand} got the stand`,
+      // ]);
+    });
+
     // Assign player
     this.socket.on('HostJoin', (arg) => {
       console.log(`assigning player ${arg}`);
@@ -74,42 +89,29 @@ export default class Game extends Phaser.Scene {
         .text(75, 700, [arg])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(24)
-        .setColor('#0de')
-        .setInteractive();
+        .setColor('#0de');
 
       gameScene.turnIndicator = gameScene.add
-        .text(400, 50, [`${onStand} got the stand`])
+        .text(400, 50, [`${gameScene.onStand} got the stand`])
         .setFont('Tithilum Web', 'Sans-serif')
-        .setFontSize(32)
-        .setColor('#f50')
-        .setInteractive();
+        .setFontSize(42)
+        .setColor('#f50');
 
       if (arg !== 'user1') {
         playGame(arg, 'user2');
       }
+      if (arg === 'user1') {
+        gameScene.indicatorLabel = gameScene.add
+          .text(400, 100, [`Who shall take the stand?`])
+          .setFont('Tithilum Web', 'Sans-serif')
+          .setFontSize(28)
+          .setColor('#fff000');
+
+        judgeGame();
+      }
     });
     console.log(`This is gamescen player: ${this.player}`);
     //Singel views
-    this.socket.on('PlayerView', (player) => {
-      switch (player) {
-        case '"user1"':
-          console.log(`PlayerView: ${player}`);
-          break;
-
-        case '"user2"':
-          console.log(`PlayerView: ${player}`);
-
-          break;
-
-        case '"user3"':
-          console.log(`PlayerView: ${player}`);
-
-          break;
-
-        default:
-          console.log(`Unkown player: ${player}`);
-      }
-    });
 
     this.dealCard = () => {
       for (let i = 0; i < 3; i++) {
@@ -156,6 +158,51 @@ export default class Game extends Phaser.Scene {
         });
       }
     };
+
+    function judgeGame() {
+      gameScene.switchToPlayer2 = gameScene.add
+        .text(400, 140, [`Player 2`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#009900')
+        .setInteractive();
+
+      gameScene.switchToPlayer3 = gameScene.add
+        .text(650, 140, [`Player 3`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#660066')
+        .setInteractive();
+
+      gameScene.switchToPlayer2.on('pointerover', () => {
+        gameScene.switchToPlayer2.setColor('#00DD00');
+      });
+
+      gameScene.switchToPlayer2.on('pointerout', () => {
+        gameScene.switchToPlayer2.setColor('#009900');
+      });
+
+      gameScene.switchToPlayer2.on('pointerdown', () => {
+        gameScene.switchToPlayer2.setColor('#009900');
+        gameScene.switchToPlayer3.setColor('#660066');
+        gameScene.socket.emit('SwitchTurn', 'user2');
+      });
+
+      gameScene.switchToPlayer3.on('pointerover', () => {
+        gameScene.switchToPlayer3.setColor('#DD00DD');
+      });
+
+      gameScene.switchToPlayer3.on('pointerdown', () => {
+        gameScene.switchToPlayer2.setColor('#006600');
+        gameScene.switchToPlayer3.setColor('#990099');
+        console.log('click player 3');
+        gameScene.socket.emit('SwitchTurn', 'user3');
+      });
+
+      gameScene.switchToPlayer3.on('pointerout', () => {
+        gameScene.switchToPlayer3.setColor('#660066');
+      });
+    }
 
     function playGame(playerId, onStand) {
       gameScene.dealText = gameScene.add

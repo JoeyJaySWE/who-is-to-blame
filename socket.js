@@ -64,6 +64,12 @@ module.exports = {
         console.log(`${socket.username} disconnected`);
         --userCounter;
       });
+
+      socket.on('SwitchTurn', (accused) => {
+        console.log(`${accused}'s turn`);
+        io.sockets.emit('NewStand', accused);
+        // socket.emi('PlayerId', )
+      });
     });
 
     io.on('PlayerLoad', () => {
