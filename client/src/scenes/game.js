@@ -78,7 +78,7 @@ export default class Game extends Phaser.Scene {
         .setInteractive();
 
       gameScene.turnIndicator = gameScene.add
-        .text(400, 50, [`${onStand} got the stand`])
+        .text(400, 50, [`${gameScene.onStand} got the stand`])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(32)
         .setColor('#f50')
