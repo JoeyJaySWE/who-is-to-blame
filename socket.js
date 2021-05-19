@@ -52,7 +52,7 @@ module.exports = {
         console.log(`Hostname updated to: ${hostName}`);
         players.hostName = hostName;
         console.log(`Players hostname: ${players.hostName}`);
-        io.sockets.emit('userJoined', 'its working');
+        io.sockets.emit('userJoined', players.hostName);
       });
 
       //   socket.on(DRAW_EVENT, drawController);

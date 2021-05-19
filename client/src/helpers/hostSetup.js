@@ -11,10 +11,7 @@ export default class GameSetUp {
     const gameLnk = document.querySelector('.game-link');
 
     //get qery string
-    const urlParams = new URLSearchParams(window.location.search);
-
-    let game = urlParams.get('game');
-
+    console.log(`this won't work lol`);
     nameBtn.addEventListener('click', function () {
       if (gameName.value === '') {
         alert('Please input a name for your session.');
@@ -30,7 +27,7 @@ export default class GameSetUp {
       let gameLnkUrl = `${window.location.href}?game=${gameNameSlug}`;
       console.log(gameLnkUrl);
       socket.emit('HostNamed', JSON.stringify(hostNameField.value));
-      window.location.replace(gameLnkUrl);
+      // window.location.replace(gameLnkUrl);
 
       gameLnk.textContent = gameLnkUrl;
       console.log(gameScene.socket);

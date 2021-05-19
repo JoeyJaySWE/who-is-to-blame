@@ -37,10 +37,10 @@ export default class Game extends Phaser.Scene {
     this.blameZone = new Zone(this, 600, 200, 240, 360, 'blame');
     this.blameDropZone = this.blameZone.renderZone();
     this.outline = this.blameZone.renderOutline(this.blameDropZone);
-
+    console.log('innan');
     this.socket = io.connect('http://localhost:3000');
     let gameSetup = new GameSetUp(this, this.socket);
-
+    console.log('efter');
     this.socket.on('userJoined', (arg) => {
       console.log(arg);
     });
