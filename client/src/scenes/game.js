@@ -2,7 +2,6 @@ import Card from '../helpers/card';
 import Zone from '../helpers/zone';
 import GameSetUp from '../helpers/hostSetup';
 import io from 'socket.io-client';
-import socket from '../../../socket';
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -88,11 +87,29 @@ export default class Game extends Phaser.Scene {
       if (arg !== 'user1') {
         playGame(arg, 'user2');
       }
-      if (arg === 'user1') {
-        judgeGame();
-      }
     });
     console.log(`This is gamescen player: ${this.player}`);
+    //Singel views
+    this.socket.on('PlayerView', (player) => {
+      switch (player) {
+        case '"user1"':
+          console.log(`PlayerView: ${player}`);
+          break;
+
+        case '"user2"':
+          console.log(`PlayerView: ${player}`);
+
+          break;
+
+        case '"user3"':
+          console.log(`PlayerView: ${player}`);
+
+          break;
+
+        default:
+          console.log(`Unkown player: ${player}`);
+      }
+    });
 
     this.dealCard = () => {
       for (let i = 0; i < 3; i++) {
@@ -139,35 +156,6 @@ export default class Game extends Phaser.Scene {
         });
       }
     };
-
-    function judgeGame() {
-      console.log('Judge view');
-      gameScene.setTurn = gameScene.add
-        .text(400, 90, ['Choose a plyer to take the stand'])
-        .setFont('Tithilum Web', 'Sans-serif')
-        .setFontSize(24)
-        .setColor('#fff000');
-      gameScene.switchPlayer2 = gameScene.add
-        .text(400, 130, ['Player 2'])
-        .setFont('Tithilum Web', 'Sans-serif')
-        .setFontSize(26)
-        .setColor('#4a0')
-        .setInteractive();
-
-      gameScene.switchPlayer3 = gameScene.add
-        .text(700, 130, ['Player 3'])
-        .setFont('Tithilum Web', 'Sans-serif')
-        .setFontSize(26)
-        .setColor('#A0A')
-        .setInteractive();
-    }
-    gameScene.switchPlayer2.on('pointerdown', () => {
-      gameScene.socket.emit('SwitchPlayer', 'user2');
-    });
-
-    gameScene.switchPlayer3.on('pointerdown', () => {
-      gameScene.socket.emit('SwitchPlayer', 'user3');
-    });
 
     function playGame(playerId, onStand) {
       gameScene.dealText = gameScene.add
