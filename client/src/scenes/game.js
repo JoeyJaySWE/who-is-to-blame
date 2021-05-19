@@ -67,8 +67,16 @@ export default class Game extends Phaser.Scene {
     this.socket.on('playerId', (arg) => {
       console.log(`this is playerId ${arg}`);
       gameScene.player = arg;
+
+      gameScene.playerLabel = gameScene.add
+        .text(75, 700, [arg])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(24)
+        .setColor('#0de')
+        .setInteractive();
+
       if (arg !== 'user1') {
-        playGame(arg);
+        playGame(arg, 'user2');
       }
     });
     console.log(`This is gamescen player: ${this.player}`);
@@ -140,7 +148,14 @@ export default class Game extends Phaser.Scene {
       }
     };
 
-    function playGame(playerId) {
+    function playGame(playerId, onStand) {
+      gameScene.turnIndicator = gameScene.add
+        .text(400, 50, [`${onStand} got the stand`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(32)
+        .setColor('#f50')
+        .setInteractive();
+
       gameScene.dealText = gameScene.add
         .text(75, 350, ['Draw Card'])
         .setFont('Tithilum Web', 'Sans-serif')
@@ -149,7 +164,9 @@ export default class Game extends Phaser.Scene {
         .setInteractive();
 
       gameScene.dealText.on('pointerdown', function () {
-        gameScene.dealCard();
+        if (playerId === onStand) {
+          gameScene.dealCard();
+        }
       });
 
       gameScene.dealText.on('pointerover', function () {
