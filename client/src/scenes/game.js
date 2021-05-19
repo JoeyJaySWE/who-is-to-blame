@@ -24,6 +24,7 @@ export default class Game extends Phaser.Scene {
     let gameScene = this;
     this.player = 'Default';
     let players;
+    this.onStand;
     this.playerHand = {
       evdenceCards: [],
       blameCards: [],
@@ -67,12 +68,20 @@ export default class Game extends Phaser.Scene {
     this.socket.on('playerId', (arg) => {
       console.log(`this is playerId ${arg}`);
       gameScene.player = arg;
+      gameScene.onStand = 'user2';
 
       gameScene.playerLabel = gameScene.add
         .text(75, 700, [arg])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(24)
         .setColor('#0de')
+        .setInteractive();
+
+      gameScene.turnIndicator = gameScene.add
+        .text(400, 50, [`${onStand} got the stand`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(32)
+        .setColor('#f50')
         .setInteractive();
 
       if (arg !== 'user1') {
@@ -149,13 +158,6 @@ export default class Game extends Phaser.Scene {
     };
 
     function playGame(playerId, onStand) {
-      gameScene.turnIndicator = gameScene.add
-        .text(400, 50, [`${onStand} got the stand`])
-        .setFont('Tithilum Web', 'Sans-serif')
-        .setFontSize(32)
-        .setColor('#f50')
-        .setInteractive();
-
       gameScene.dealText = gameScene.add
         .text(75, 350, ['Draw Card'])
         .setFont('Tithilum Web', 'Sans-serif')
