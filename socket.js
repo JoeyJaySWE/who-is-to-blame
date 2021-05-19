@@ -27,7 +27,8 @@ module.exports = {
         case 'user1':
           players.hostName = socket.username;
           console.log('User1 ' + players);
-          io.sockets.emit('HostJoin', JSON.stringify(players));
+          io.sockets.emit('HostJoin', JSON.stringify(players.hostName));
+          io.sockets.emit('assignPlayers', JSON.stringify(players));
           break;
 
         case 'user2':
@@ -47,18 +48,19 @@ module.exports = {
       console.log(`${socket.username} connected`);
       io.sockets.emit('PlayerLoad', JSON.stringify(players));
 
+      socket.on('HostNamed', (hostName) => {
+        console.log(`Hostname updated to: ${hostName}`);
+        players.hostName = hostName;
+        console.log(`Players hostname: ${players.hostName}`);
+        io.sockets.emit('userJoined', 'its working');
+      });
+
       //   socket.on(DRAW_EVENT, drawController);
 
       socket.once('disconnect', () => {
         console.log(`${socket.username} disconnected`);
         --userCounter;
       });
-    });
-
-    io.on('HostNamed', (hostName) => {
-      console.log(`Hostname updated to: ${hostName}`);
-      players.hostName = hostName;
-      console.log(`Players hostname: ${players.hostName}`);
     });
 
     io.on('PlayerLoad', () => {

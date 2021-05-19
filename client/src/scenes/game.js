@@ -22,7 +22,8 @@ export default class Game extends Phaser.Scene {
   create() {
     // let hostUs÷er;
     let gameScene = this;
-    let gameSetup = new GameSetUp(this, this.socket);
+    let player;
+    let players;
     this.playerHand = {
       evdenceCards: [],
       blameCards: [],
@@ -38,6 +39,11 @@ export default class Game extends Phaser.Scene {
     this.outline = this.blameZone.renderOutline(this.blameDropZone);
 
     this.socket = io.connect('http://localhost:3000');
+    let gameSetup = new GameSetUp(this, this.socket);
+
+    this.socket.on('userJoined', (arg) => {
+      console.log(arg);
+    });
     // const socket = socketIOClient.connect(SERVER_URL);
 
     // IF PLAYER JOIN
@@ -49,12 +55,26 @@ export default class Game extends Phaser.Scene {
     // 6. emit to front end.
     // 7. if player 3 name is true, allow start game
 
+    // Assign player
+    this.socket.on('HostJoin', (arg) => {
+      console.log(`assigning player ${arg}`);
+      player = arg;
+    });
+
+    // Assign players array
+    this.socket.on('assignPlayers', (arg) => {
+      players = JSON.parse(arg);
+      console.log(players);
+      // gameScene.GameSetUp.buildLobby(players);
+    });
+
     //Singel views
     this.socket.on('PlayerView', (player) => {
       switch (player.hostName) {
         case '"user1"':
           console.log(`PlayerView: ${player}`);
-          gameScene.GameSetUp.getPlayers(player);
+          // gameScene.GameSetUp.getPlayers(player);
+          gameScene.GameSetUp.buildLobby(gameScene.players);
 
           break;
 
