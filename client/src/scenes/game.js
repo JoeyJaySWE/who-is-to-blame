@@ -22,7 +22,7 @@ export default class Game extends Phaser.Scene {
   create() {
     // let hostUs÷er;
     let gameScene = this;
-    let player;
+    this.player = 'Default';
     let players;
     this.playerHand = {
       evdenceCards: [],
@@ -56,7 +56,7 @@ export default class Game extends Phaser.Scene {
     // Assign player
     this.socket.on('HostJoin', (arg) => {
       console.log(`assigning player ${arg}`);
-      player = arg;
+      gameScene.player = arg;
     });
 
     // Assign players array
@@ -66,7 +66,12 @@ export default class Game extends Phaser.Scene {
     });
     this.socket.on('playerId', (arg) => {
       console.log(`this is playerId ${arg}`);
+      gameScene.player = arg;
+      if (arg !== 'user1') {
+        playGame(arg);
+      }
     });
+    console.log(`This is gamescen player: ${this.player}`);
     //Singel views
     this.socket.on('PlayerView', (player) => {
       switch (player) {
@@ -135,106 +140,111 @@ export default class Game extends Phaser.Scene {
       }
     };
 
-    this.dealText = this.add
-      .text(75, 350, ['Draw Card'])
-      .setFont('Tithilum Web', 'Sans-serif')
-      .setFontSize(18)
-      .setColor('#4a0')
-      .setInteractive();
+    function playGame(playerId) {
+      gameScene.dealText = gameScene.add
+        .text(75, 350, ['Draw Card'])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(18)
+        .setColor('#4a0')
+        .setInteractive();
 
-    this.dealText.on('pointerdown', function () {
-      gameScene.dealCard();
-    });
+      gameScene.dealText.on('pointerdown', function () {
+        gameScene.dealCard();
+      });
 
-    this.dealText.on('pointerover', function () {
-      gameScene.dealText.setColor('#470');
-    });
+      gameScene.dealText.on('pointerover', function () {
+        gameScene.dealText.setColor('#470');
+      });
 
-    this.dealText.on('pointerout', function () {
-      gameScene.dealText.setColor('#4a0');
-    });
+      gameScene.dealText.on('pointerout', function () {
+        gameScene.dealText.setColor('#4a0');
+      });
 
-    this.input.on('dragstart', function (pointer, gameObject) {
-      gameObject.setTint(0xff69ba);
-      if (gameObject.data.list.cardType === 'blame') {
-        gameObject.scale = 0.19;
-      } else {
-        gameObject.scale = 0.1;
-      }
-      gameScene.children.bringToTop(gameObject);
-    });
-
-    this.input.on('dragend', function (pointer, gameObject, dropped) {
-      gameObject.setTint();
-      if (!dropped) {
+      gameScene.input.on('dragstart', function (pointer, gameObject) {
+        gameObject.setTint(0xff69ba);
         if (gameObject.data.list.cardType === 'blame') {
-          gameObject.scale = 0.1;
+          gameObject.scale = 0.19;
         } else {
-          gameObject.scale = 0.05;
-        }
-        gameObject.x = gameObject.input.dragStartX;
-        gameObject.y = gameObject.input.dragStartY;
-      }
-    });
-
-    this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-      gameObject.x = dragX;
-      gameObject.y = dragY;
-    });
-
-    if (this.playerHand.evdenceCards[1]) {
-    }
-    this.input.on('drop', function (pointer, gameObject, evidenceDropZone) {
-      if (gameObject.x > 300 && gameObject.x < 540) {
-        if (gameObject.data.list.cardType !== 'evidence') {
           gameObject.scale = 0.1;
+        }
+        gameScene.children.bringToTop(gameObject);
+      });
+
+      gameScene.input.on('dragend', function (pointer, gameObject, dropped) {
+        gameObject.setTint();
+        if (!dropped) {
+          if (gameObject.data.list.cardType === 'blame') {
+            gameObject.scale = 0.1;
+          } else {
+            gameObject.scale = 0.05;
+          }
           gameObject.x = gameObject.input.dragStartX;
           gameObject.y = gameObject.input.dragStartY;
-          return;
         }
-        let missingCard =
-          gameScene.playerHand.evdenceCards.lastIndexOf(gameObject);
-        gameScene.playerHand.evdenceCards[missingCard] = null;
-      } else {
-        if (gameObject.data.list.cardType !== 'blame') {
-          gameObject.scale = 0.05;
-          gameObject.x = gameObject.input.dragStartX;
-          gameObject.y = gameObject.input.dragStartY;
-          return;
+      });
+
+      gameScene.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+        gameObject.x = dragX;
+        gameObject.y = dragY;
+      });
+
+      if (gameScene.playerHand.evdenceCards[1]) {
+      }
+      gameScene.input.on(
+        'drop',
+        function (pointer, gameObject, evidenceDropZone) {
+          if (gameObject.x > 300 && gameObject.x < 540) {
+            if (gameObject.data.list.cardType !== 'evidence') {
+              gameObject.scale = 0.1;
+              gameObject.x = gameObject.input.dragStartX;
+              gameObject.y = gameObject.input.dragStartY;
+              return;
+            }
+            let missingCard =
+              gameScene.playerHand.evdenceCards.lastIndexOf(gameObject);
+            gameScene.playerHand.evdenceCards[missingCard] = null;
+          } else {
+            if (gameObject.data.list.cardType !== 'blame') {
+              gameObject.scale = 0.05;
+              gameObject.x = gameObject.input.dragStartX;
+              gameObject.y = gameObject.input.dragStartY;
+              return;
+            }
+            let missingCard =
+              gameScene.playerHand.blameCards.lastIndexOf(gameObject);
+            gameScene.playerHand.blameCards[missingCard] = null;
+          }
+
+          if (gameObject.data.list.cardType === 'blame') {
+            gameObject.scale = 0.19;
+            gameScene.blameDropZone.data.values.cardData.push(gameObject);
+            let pileTopCard =
+              gameScene.blameDropZone.data.values.cardData.length - 1;
+            gameScene.blameDropZone.data.values.cardData[pileTopCard].on(
+              'pointerout',
+              function () {
+                gameScene.scale = 0.19;
+              }
+            );
+          } else {
+            gameObject.scale = 0.1;
+            evidenceDropZone.data.values.cards++;
+            evidenceDropZone.data.values.cardData.push(gameObject);
+            let pileTopCard = evidenceDropZone.data.values.cardData.length - 1;
+
+            evidenceDropZone.data.values.cardData[pileTopCard].on(
+              'pointerout',
+              function () {
+                gameScene.scale = 0.1;
+              }
+            );
+          }
+          gameObject.x = evidenceDropZone.x + 120;
+          gameObject.y = evidenceDropZone.y + 180;
+          gameObject.disableInteractive();
         }
-        let missingCard =
-          gameScene.playerHand.blameCards.lastIndexOf(gameObject);
-        gameScene.playerHand.blameCards[missingCard] = null;
-      }
-
-      if (gameObject.data.list.cardType === 'blame') {
-        gameObject.scale = 0.19;
-        gameScene.blameDropZone.data.values.cardData.push(gameObject);
-        let pileTopCard =
-          gameScene.blameDropZone.data.values.cardData.length - 1;
-        gameScene.blameDropZone.data.values.cardData[pileTopCard].on(
-          'pointerout',
-          function () {
-            this.scale = 0.19;
-          }
-        );
-      } else {
-        gameObject.scale = 0.1;
-        evidenceDropZone.data.values.cards++;
-        evidenceDropZone.data.values.cardData.push(gameObject);
-        let pileTopCard = evidenceDropZone.data.values.cardData.length - 1;
-
-        evidenceDropZone.data.values.cardData[pileTopCard].on(
-          'pointerout',
-          function () {
-            this.scale = 0.1;
-          }
-        );
-      }
-      gameObject.x = evidenceDropZone.x + 120;
-      gameObject.y = evidenceDropZone.y + 180;
-      gameObject.disableInteractive();
-    });
+      );
+    }
   }
 
   update() {}
