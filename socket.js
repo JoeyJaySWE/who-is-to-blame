@@ -70,6 +70,16 @@ module.exports = {
         io.sockets.emit('NewStand', accused);
         // socket.emi('PlayerId', )
       });
+
+      socket.on('EvidenceDropped', (evidence, player) => {
+        console.log(`Evidence dropped: ${evidence}`);
+        io.sockets.emit('EvidenceDropped', { evidence, player });
+      });
+
+      socket.on('BlameDropped', (blame, player) => {
+        console.log(`Blame dropped: ${blame}`);
+        io.sockets.emit('BlameDropped', { blame, player });
+      });
     });
 
     io.on('PlayerLoad', () => {

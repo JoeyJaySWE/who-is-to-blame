@@ -60,9 +60,6 @@ export default class Game extends Phaser.Scene {
     //socket set up
     this.socket = io.connect('http://localhost:3000');
     // let gameSetup = new GameSetUp(this, this.socket);
-    this.socket.on('userJoined', (arg) => {
-      console.log(`User Joined: ${arg}`);
-    });
 
     // IF PLAYER JOIN
     // 1. check if player ain't  host
@@ -87,6 +84,55 @@ export default class Game extends Phaser.Scene {
       // ]);
     });
 
+    //update all views with dropped evidence
+    this.socket.on('EvidenceDropped', (arg) => {
+      console.log({ arg });
+      let evidence = arg.evidence.playedCard;
+      evidence = JSON.parse(evidence);
+      console.log({ evidence });
+      let presenter = arg.evidence.player;
+      console.log({ presenter });
+
+      // evidence = evidenceParsed[0];
+
+      if (gameScene.player !== presenter) {
+        console.log('Not player 2');
+        let sprite = evidence.textureKey;
+
+        let card = new Card(gameScene, 0.1, 'evidence');
+        card.render(
+          gameScene.evidenceDropZone.x + 120,
+          gameScene.evidenceDropZone.y + 180,
+          sprite
+        );
+        console.log({ sprite });
+      }
+    });
+
+    this.socket.on('BlameDropped', (arg) => {
+      console.log({ arg });
+      let blame = arg.blame.playedCard;
+      blame = JSON.parse(blame);
+      console.log({ blame });
+      let presenter = arg.blame.player;
+      console.log({ presenter });
+
+      // blame = blameParsed[0];
+
+      if (gameScene.player !== presenter) {
+        console.log('Not player 2');
+        let sprite = blame.textureKey;
+
+        let card = new Card(gameScene, 0.19, 'blame');
+        card.render(
+          gameScene.blameDropZone.x + 120,
+          gameScene.blameDropZone.y + 180,
+          sprite
+        );
+        console.log({ sprite });
+      }
+    });
+
     // Assign player
     this.socket.on('HostJoin', (arg) => {
       console.log(`assigning player ${arg}`);
@@ -104,6 +150,8 @@ export default class Game extends Phaser.Scene {
       console.log(`this is playerId ${arg}`);
       gameScene.player = arg;
       gameScene.onStand = 'user2';
+      document.title = arg;
+      console.log(`title is: ${document.title}`);
 
       // displayes the players name in lower left corner
       gameScene.playerLabel = gameScene.add
@@ -124,7 +172,7 @@ export default class Game extends Phaser.Scene {
         playGame(arg, 'user2');
       }
 
-      //if current user is judge, shpw judge view
+      //if current user is judge, show judge view
       if (arg === 'user1') {
         //adds a text to inidicate the option to choose player to take stand
         gameScene.indicatorLabel = gameScene.add
@@ -137,7 +185,6 @@ export default class Game extends Phaser.Scene {
       }
     });
     console.log(`This is gamescen player: ${this.player}`);
-    //Singel views
 
     this.dealCard = () => {
       for (let i = 0; i < 3; i++) {
@@ -145,39 +192,35 @@ export default class Game extends Phaser.Scene {
           continue;
         }
 
+        let playerCard = new Card(this, 0.05, 'evidence');
+        this.playerHand.evdenceCards[i] = playerCard.render(
+          300 + i * 100,
+          670,
+          'backside'
+        );
+
         if (i === 1) {
-          let playerCard = new Card(this, 0.1, 'evidence');
+          console.log(this.playerHand.evdenceCards[i]);
           this.playerHand.evdenceCards[i] = playerCard.render(
             300 + i * 100,
             670,
             'evidence'
           );
-
-          gameScene.playerHand.evdenceCards[i].on('pointerover', function () {
-            this.scale = 0.2;
-            gameScene.children.bringToTop(this);
-          });
-
-          gameScene.playerHand.evdenceCards[i].on('pointerout', function () {
-            this.scale = 0.1;
-          });
-        } else {
-          let playerCard = new Card(this, 0.05, 'evidence');
-          this.playerHand.evdenceCards[i] = playerCard.render(
-            300 + i * 100,
-            670,
-            'backside'
-          );
-
-          gameScene.playerHand.evdenceCards[i].on('pointerover', function () {
-            this.scale = 0.075;
-            gameScene.children.bringToTop(this);
-          });
-
-          gameScene.playerHand.evdenceCards[i].on('pointerout', function () {
-            this.scale = 0.05;
-          });
+          console.log(this.playerHand.evdenceCards[i].texture.key);
         }
+        gameScene.playerHand.evdenceCards[i].on('pointerover', function () {
+          this.scale = 0.075;
+          gameScene.children.bringToTop(this);
+        });
+
+        gameScene.playerHand.evdenceCards[i].on('pointerout', function () {
+          if (
+            this.x !== gameScene.evidenceDropZone.x + 120 &&
+            this.y !== gameScene.evidenceDropZone.y + 180
+          ) {
+            this.scale = 0.05;
+          }
+        });
       }
 
       for (let i = 0; i < 3; i++) {
@@ -199,7 +242,12 @@ export default class Game extends Phaser.Scene {
         });
 
         gameScene.playerHand.blameCards[i].on('pointerout', function () {
-          this.scale = 0.1;
+          if (
+            this.x !== gameScene.blameDropZone.x + 120 &&
+            this.y !== gameScene.blameDropZone.y + 180
+          ) {
+            this.scale = 0.1;
+          }
         });
       }
     };
@@ -343,7 +391,9 @@ export default class Game extends Phaser.Scene {
             let missingCard =
               gameScene.playerHand.evdenceCards.lastIndexOf(gameObject);
             gameScene.playerHand.evdenceCards[missingCard] = null;
-            socket.emit('EvidenceDropped', JSON.stringify(gameObject));
+            let playedCard = JSON.stringify(gameObject);
+            let player = gameScene.player;
+            gameScene.socket.emit('EvidenceDropped', { playedCard, player });
           }
 
           // if droped in the Blame pile
@@ -360,6 +410,9 @@ export default class Game extends Phaser.Scene {
             let missingCard =
               gameScene.playerHand.blameCards.lastIndexOf(gameObject);
             gameScene.playerHand.blameCards[missingCard] = null;
+            let playedCard = JSON.stringify(gameObject);
+            let player = gameScene.player;
+            gameScene.socket.emit('BlameDropped', { playedCard, player });
           }
 
           if (gameObject.data.list.cardType === 'blame') {
@@ -367,24 +420,24 @@ export default class Game extends Phaser.Scene {
             gameScene.blameDropZone.data.values.cardData.push(gameObject);
             let pileTopCard =
               gameScene.blameDropZone.data.values.cardData.length - 1;
-            gameScene.blameDropZone.data.values.cardData[pileTopCard].on(
-              'pointerout',
-              function () {
-                gameScene.scale = 0.19;
-              }
-            );
+            // gameScene.blameDropZone.data.values.cardData[pileTopCard].on(
+            //   'pointerout',
+            //   function () {
+            //     gameScene.scale = 0.19;
+            //   }
+            // );
           } else {
             gameObject.scale = 0.1;
             evidenceDropZone.data.values.cards++;
             evidenceDropZone.data.values.cardData.push(gameObject);
             let pileTopCard = evidenceDropZone.data.values.cardData.length - 1;
 
-            evidenceDropZone.data.values.cardData[pileTopCard].on(
-              'pointerout',
-              function () {
-                gameScene.scale = 0.1;
-              }
-            );
+            // evidenceDropZone.data.values.cardData[pileTopCard].on(
+            //   'pointerout',
+            //   function () {
+            //     gameScene.scale = 0.1;
+            //   }
+            // );
           }
           gameObject.x = evidenceDropZone.x + 120;
           gameObject.y = evidenceDropZone.y + 180;
