@@ -3,6 +3,7 @@
 </p>
 
 # Who's to blame?
+
 Ready to put your friendship to the limit?
 The Judge has summoned you and your colleagues due to a terrible crime taken place and it's time to blame someone.
 The one who's found guilty will receive the death penalty while the other gets jail time.
