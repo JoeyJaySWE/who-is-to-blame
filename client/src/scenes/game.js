@@ -25,17 +25,25 @@ export default class Game extends Phaser.Scene {
 
     //fix for scoping access
     let gameScene = this;
+
     // the current player who's view we're watching
     this.player = 'Default';
+
     // all players
-    let players;
+    this.lives = {
+      player2: 3,
+      player3: 3,
+    };
+
     // which players turn is it
     this.onStand;
+
     // which card does the player have on hand
     this.playerHand = {
       evdenceCards: [],
       blameCards: [],
     };
+
     // who's the Judge
     this.hostName;
 
@@ -133,18 +141,6 @@ export default class Game extends Phaser.Scene {
       }
     });
 
-    // Assign player
-    this.socket.on('HostJoin', (arg) => {
-      console.log(`assigning player ${arg}`);
-      gameScene.player = arg;
-    });
-
-    // Assign players array
-    this.socket.on('assignPlayers', (arg) => {
-      players = JSON.parse(arg);
-      // gameScene.GameSetUp.buildLobby(players);
-    });
-
     // first setup
     this.socket.on('playerId', (arg) => {
       console.log(`this is playerId ${arg}`);
@@ -168,20 +164,24 @@ export default class Game extends Phaser.Scene {
         .setColor('#f50');
 
       //if current user ain't judge, show player view
+      switch (arg) {
+        case 'user1':
+          judgeGame(gameScene.lives);
+          break;
+
+        case 'user2':
+          playGame(arg, 'user2', gameScene.lives.player2);
+          break;
+
+        case 'user3':
+          playGame(arg, 'user2', gameScene.lives.player3);
+          break;
+      }
       if (arg !== 'user1') {
-        playGame(arg, 'user2');
       }
 
       //if current user is judge, show judge view
       if (arg === 'user1') {
-        //adds a text to inidicate the option to choose player to take stand
-        gameScene.indicatorLabel = gameScene.add
-          .text(400, 100, [`Who shall take the stand?`])
-          .setFont('Tithilum Web', 'Sans-serif')
-          .setFontSize(28)
-          .setColor('#fff000');
-
-        judgeGame();
       }
     });
     console.log(`This is gamescen player: ${this.player}`);
@@ -253,6 +253,13 @@ export default class Game extends Phaser.Scene {
     };
 
     function judgeGame() {
+      //adds a text to inidicate the option to choose player to take stand
+      gameScene.indicatorLabel = gameScene.add
+        .text(400, 100, [`Who shall take the stand?`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#fff000');
+
       // ads text/button for making it player2's turn
       gameScene.switchToPlayer2 = gameScene.add
         .text(400, 140, [`Player 2`])
@@ -306,7 +313,13 @@ export default class Game extends Phaser.Scene {
     }
 
     // Player views
-    function playGame(playerId, onStand) {
+    function playGame(playerId, onStand, lives) {
+      gameScene.Life = gameScene.add
+        .text(75, 730, [`Lives left: ${lives}`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(18)
+        .setColor('#0de');
+
       // Adds a text/button for drawing cards
       gameScene.dealText = gameScene.add
         .text(75, 350, ['Draw Card'])
