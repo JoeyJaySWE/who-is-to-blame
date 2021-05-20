@@ -84,9 +84,33 @@ export default class Game extends Phaser.Scene {
       console.log(`Recived ${accused}'s turn.`);
       gameScene.turnIndicator.text = `${gameScene.onStand} got the stand`;
 
-      if (gameScene.player !== 'user1') {
-        playGame(gameScene.player, gameScene.onStand);
+      switch (gameScene.player) {
+        case 'user1':
+          gameScene.Player2Guilty.text = null;
+          gameScene.Player3Guilty.text = null;
+          judgeGame(gameScene.lives);
+          break;
+
+        case 'user2':
+          console.log('player lives:', gameScene.lives.player2);
+          gameScene.Life.text = null;
+          playGame(
+            gameScene.player,
+            gameScene.onStand,
+            gameScene.lives.player2
+          );
+          break;
+
+        case 'user3':
+          gameScene.Life.text = null;
+          playGame(
+            gameScene.player,
+            gameScene.onStand,
+            gameScene.lives.player3
+          );
+          break;
       }
+
       // gameScene.turnIndicator.text(400, 50, [
       //   `${gameScene.onStand} got the stand`,
       // ]);
@@ -141,6 +165,40 @@ export default class Game extends Phaser.Scene {
       }
     });
 
+    this.socket.on('Strike', (guilty) => {
+      if (guilty === 'user2') {
+        gameScene.lives.player2--;
+        console.log('Player 2 lost lives');
+      } else {
+        gameScene.lives.player3--;
+        console.log('player 3 lost life');
+      }
+
+      switch (gameScene.player) {
+        case 'user1':
+          judgeGame(gameScene.lives);
+          console.log('tested');
+          break;
+
+        case 'user2':
+          gameScene.Life.text = null;
+          playGame(
+            gameScene.player,
+            gameScene.onStand,
+            gameScene.lives.player2
+          );
+          break;
+
+        case 'user3':
+          gameScene.Life.text = null;
+          playGame(
+            gameScene.player,
+            gameScene.onStand,
+            gameScene.lives.player3
+          );
+          break;
+      }
+    });
     // first setup
     this.socket.on('playerId', (arg) => {
       console.log(`this is playerId ${arg}`);
@@ -167,6 +225,7 @@ export default class Game extends Phaser.Scene {
       switch (arg) {
         case 'user1':
           judgeGame(gameScene.lives);
+          console.log('init judge test');
           break;
 
         case 'user2':
@@ -252,7 +311,8 @@ export default class Game extends Phaser.Scene {
       }
     };
 
-    function judgeGame() {
+    function judgeGame(lives) {
+      console.log('this should return twice');
       //adds a text to inidicate the option to choose player to take stand
       gameScene.indicatorLabel = gameScene.add
         .text(400, 100, [`Who shall take the stand?`])
@@ -310,10 +370,83 @@ export default class Game extends Phaser.Scene {
       gameScene.switchToPlayer3.on('pointerout', () => {
         gameScene.switchToPlayer3.setColor('#660066');
       });
+
+      gameScene.lifeLabel = gameScene.add
+        .text(500, 600, [`Who's guilty?`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#dd0000');
+
+      gameScene.Player3Guilty = gameScene.add
+        .text(650, 675, [`Player 3`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#660066')
+        .setInteractive();
+
+      gameScene.Player3Strikes = gameScene.add
+        .text(650, 720, [`Strikes left: ${lives.player3}`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#660066');
+
+      gameScene.Player2Guilty = gameScene.add
+        .text(400, 675, [`Player 2`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#006600')
+        .setInteractive();
+
+      gameScene.Player2Strikes = gameScene.add
+        .text(400, 720, [`Strikes left: ${lives.player2}`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(28)
+        .setColor('#006600');
+
+      gameScene.Play;
+
+      gameScene.Player2Guilty.on('pointerover', () => {
+        gameScene.Player2Guilty.setFontSize(34);
+        gameScene.Player2Guilty.setColor('#00DD00');
+        gameScene.Player2Strikes.setColor('#00DD00');
+      });
+
+      gameScene.Player2Guilty.on('pointerout', () => {
+        gameScene.Player2Guilty.setFontSize(28);
+        gameScene.Player2Guilty.setColor('#006600');
+        gameScene.Player2Strikes.setColor('#006600');
+      });
+
+      gameScene.Player3Guilty.on('pointerover', () => {
+        gameScene.Player3Guilty.setFontSize(34);
+        gameScene.Player3Guilty.setColor('#DD00DD');
+        gameScene.Player3Strikes.setColor('#DD00DD');
+      });
+
+      gameScene.Player3Guilty.on('pointerout', () => {
+        gameScene.Player3Guilty.setFontSize(28);
+        gameScene.Player3Guilty.setColor('#660066');
+        gameScene.Player3Strikes.setColor('#660066');
+      });
+
+      gameScene.Player2Guilty.on('pointerdown', () => {
+        console.log('Clicked on user2');
+        gameScene.Player2Guilty.text = null;
+        gameScene.Player2Strikes.text = null;
+        gameScene.socket.emit('Strike', 'user2');
+      });
+
+      gameScene.Player3Guilty.on('pointerdown', () => {
+        console.log('Clicked on user3');
+        gameScene.Player3Guilty.destroy();
+        gameScene.Player3Strikes.destroy();
+        gameScene.socket.emit('Strike', 'user3');
+      });
     }
 
     // Player views
     function playGame(playerId, onStand, lives) {
+      console.log({ lives });
       gameScene.Life = gameScene.add
         .text(75, 730, [`Lives left: ${lives}`])
         .setFont('Tithilum Web', 'Sans-serif')
