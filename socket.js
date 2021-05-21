@@ -80,12 +80,18 @@ module.exports = {
         console.log(`Blame dropped: ${blame}`);
         io.sockets.emit('BlameDropped', { blame, player });
       });
+
+      socket.on('Strike', (guilty) => {
+        console.log(`Strike on ${guilty}`);
+        io.sockets.emit('Strike', guilty);
+      });
     });
 
     io.on('PlayerLoad', () => {
       console.log('Recived data');
       socket.emit('PlayerList', JSON.stringify(players));
     });
+
     return io;
   },
   getIO: () => {
