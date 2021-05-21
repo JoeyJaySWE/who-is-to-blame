@@ -29,12 +29,27 @@ export default class Game extends Phaser.Scene {
     // the current player who's view we're watching
     this.player = 'Default';
 
-    // all players
+    // all players lives
     this.lives = {
       player2: 3,
       player3: 3,
     };
 
+    this.gameOver = false;
+    this.players = {
+      user1: {
+        name: 'user1',
+        lives: null,
+      },
+      user2: {
+        name: 'user2',
+        lives: 3,
+      },
+      user3: {
+        name: 'user3',
+        lives: 3,
+      },
+    };
     // which players turn is it
     this.onStand;
 
@@ -48,6 +63,10 @@ export default class Game extends Phaser.Scene {
     this.hostName;
 
     // ----------------------------------
+
+    if (this.gameOver === true) {
+      return;
+    }
 
     // --------- [ place we drop our evidnece cards ] ---------------------
 
@@ -81,35 +100,28 @@ export default class Game extends Phaser.Scene {
     //new turn
     this.socket.on('NewStand', (accused) => {
       gameScene.onStand = accused;
+      let player = gameScene.player;
+      let playerData = gameScene.players[player];
+      // displayes the players name in lower left corner
+      gameScene.playerLabel.text = playerData.name;
+      console.log('new round', playerData.name);
       console.log(`Recived ${accused}'s turn.`);
       gameScene.turnIndicator.text = `${gameScene.onStand} got the stand`;
 
       switch (gameScene.player) {
         case 'user1':
-          gameScene.Player2Guilty.text = null;
-          gameScene.Player3Guilty.text = null;
-          gameScene.Player2Strikes.text = null;
-          gameScene.Player3Strikes.text = null;
-          judgeGame(gameScene.lives);
+          judgeGame(gameScene.players);
           break;
 
         case 'user2':
           console.log('player lives:', gameScene.lives.player2);
           gameScene.Life.text = null;
-          playGame(
-            gameScene.player,
-            gameScene.onStand,
-            gameScene.lives.player2
-          );
+          playGame(playerData.name, gameScene.onStand, playerData.lives);
           break;
 
         case 'user3':
           gameScene.Life.text = null;
-          playGame(
-            gameScene.player,
-            gameScene.onStand,
-            gameScene.lives.player3
-          );
+          playGame(playerData.name, gameScene.onStand, playerData.lives);
           break;
       }
 
@@ -151,7 +163,6 @@ export default class Game extends Phaser.Scene {
       console.log({ arg });
       let blame = arg.blame.playedCard;
       blame = JSON.parse(blame);
-      console.log({ blame });
       let presenter = arg.blame.player;
       console.log({ presenter });
 
@@ -162,47 +173,14 @@ export default class Game extends Phaser.Scene {
         let sprite = blame.textureKey;
 
         let card = new Card(gameScene, 0.19, 'blame');
-        card.render(
-          gameScene.blameDropZone.x + 120,
-          gameScene.blameDropZone.y + 180,
-          sprite
-        );
+        card
+          .render(
+            gameScene.blameDropZone.x + 120,
+            gameScene.blameDropZone.y + 180,
+            sprite
+          )
+          .disableInteractive();
         console.log({ sprite });
-      }
-    });
-
-    this.socket.on('Strike', (guilty) => {
-      if (guilty === 'user2') {
-        gameScene.lives.player2--;
-        console.log('Player 2 lost lives');
-      } else {
-        gameScene.lives.player3--;
-        console.log('player 3 lost life');
-      }
-
-      switch (gameScene.player) {
-        case 'user1':
-          judgeGame(gameScene.lives);
-          console.log('tested');
-          break;
-
-        case 'user2':
-          gameScene.Life.text = null;
-          playGame(
-            gameScene.player,
-            gameScene.onStand,
-            gameScene.lives.player2
-          );
-          break;
-
-        case 'user3':
-          gameScene.Life.text = null;
-          playGame(
-            gameScene.player,
-            gameScene.onStand,
-            gameScene.lives.player3
-          );
-          break;
       }
     });
 
@@ -219,20 +197,33 @@ export default class Game extends Phaser.Scene {
       .setAlign('center')
       .setFontSize(24)
       .setColor('#7799bb');
+
     // first setup
     this.socket.on('playerId', (arg) => {
       console.log(`this is playerId ${arg}`);
+      if (parseInt(arg.slice(-1)) > 3) {
+        console.log('too big');
+        gameScene.roomFull = gameScene.add
+          .text(300, 100, ['Room is full, check back later'])
+          .setFont('Tithilum Web', 'Sans-serif')
+          .setFontSize(42)
+          .setColor('#0de');
+        document.title = 'No room!';
+        return;
+      }
       gameScene.player = arg;
-      gameScene.onStand = 'user2';
-      document.title = arg;
-      console.log(`title is: ${document.title}`);
-
+      let playerData = gameScene.players[gameScene.player];
       // displayes the players name in lower left corner
       gameScene.playerLabel = gameScene.add
-        .text(75, 700, [arg])
+        .text(75, 700, gameScene.players[gameScene.player].name)
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(24)
         .setColor('#0de');
+      console.log('modifed: ', playerData.lives);
+
+      gameScene.onStand = 'No one';
+      document.title = arg;
+      console.log(`title is: ${document.title}`);
 
       // Disaplays whos turn it is in the center top of screen
       gameScene.turnIndicator = gameScene.add
@@ -244,23 +235,17 @@ export default class Game extends Phaser.Scene {
       //if current user ain't judge, show player view
       switch (arg) {
         case 'user1':
-          judgeGame(gameScene.lives);
+          judgeGame(gameScene.players);
           console.log('init judge test');
           break;
 
         case 'user2':
-          playGame(arg, 'user2', gameScene.lives.player2);
+          playGame(playerData.name, gameScene.onStand, playerData.lives);
           break;
 
         case 'user3':
-          playGame(arg, 'user2', gameScene.lives.player3);
+          playGame(playerData.name, gameScene.onStand, playerData.lives);
           break;
-      }
-      if (arg !== 'user1') {
-      }
-
-      //if current user is judge, show judge view
-      if (arg === 'user1') {
       }
     });
 
@@ -347,7 +332,43 @@ export default class Game extends Phaser.Scene {
       }
     };
 
-    function judgeGame(lives) {
+    this.socket.on('Strike', (guilty) => {
+      let guiltyData = gameScene.players[guilty];
+      guiltyData.lives--;
+
+      console.log('resumed');
+      let playerData = gameScene.players[gameScene.player];
+      gameScene.playerLabel.text = playerData.name;
+      if (guiltyData.lives === 0) {
+        gameOver(guiltyData);
+        gameScene.gameOver = true;
+        return;
+      } else {
+        switch (gameScene.player) {
+          case 'user1':
+            judgeGame(gameScene.players);
+            console.log('tested');
+            break;
+
+          case 'user2':
+            gameScene.Life.text = null;
+            playGame(playerData.name, gameScene.onStand, playerData.lives);
+            break;
+
+          case 'user3':
+            gameScene.Life.text = null;
+            playGame(playerData.name, gameScene.onStand, playerData.lives);
+            break;
+        }
+      }
+    });
+    console.log('last thing');
+
+    function judgeGame(players) {
+      if (gameScene.gameOver === true) {
+        console.log('judge know games over');
+        return;
+      }
       console.log('this should return twice');
       //adds a text to inidicate the option to choose player to take stand
       gameScene.indicatorLabel = gameScene.add
@@ -358,7 +379,7 @@ export default class Game extends Phaser.Scene {
 
       // ads text/button for making it player2's turn
       gameScene.switchToPlayer2 = gameScene.add
-        .text(400, 140, [`Player 2`])
+        .text(400, 140, [players.user2.name])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(28)
         .setColor('#009900')
@@ -366,7 +387,7 @@ export default class Game extends Phaser.Scene {
 
       // ads text/button for making it player3's turn
       gameScene.switchToPlayer3 = gameScene.add
-        .text(650, 140, [`Player 3`])
+        .text(650, 140, [players.user3.name])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(28)
         .setColor('#660066')
@@ -399,6 +420,7 @@ export default class Game extends Phaser.Scene {
         gameScene.switchToPlayer2.setColor('#006600');
         gameScene.switchToPlayer3.setColor('#990099');
         console.log('click player 3');
+        clearTexts(gameScene.player);
         gameScene.socket.emit('SwitchTurn', 'user3');
       });
 
@@ -414,27 +436,27 @@ export default class Game extends Phaser.Scene {
         .setColor('#dd0000');
 
       gameScene.Player3Guilty = gameScene.add
-        .text(650, 675, [`Player 3`])
+        .text(650, 675, [players.user3.name])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(28)
         .setColor('#660066')
         .setInteractive();
 
       gameScene.Player3Strikes = gameScene.add
-        .text(650, 720, [`Strikes left: ${lives.player3}`])
+        .text(650, 720, [`Strikes left: ${players.user3.lives}`])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(28)
         .setColor('#660066');
 
       gameScene.Player2Guilty = gameScene.add
-        .text(400, 675, [`Player 2`])
+        .text(400, 675, [players.user2.name])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(28)
         .setColor('#006600')
         .setInteractive();
 
       gameScene.Player2Strikes = gameScene.add
-        .text(400, 720, [`Strikes left: ${lives.player2}`])
+        .text(400, 720, [`Strikes left: ${players.user2.lives}`])
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(28)
         .setColor('#006600');
@@ -465,19 +487,13 @@ export default class Game extends Phaser.Scene {
 
       gameScene.Player2Guilty.on('pointerdown', () => {
         console.log('Clicked on user2');
-        gameScene.Player2Guilty.text = null;
-        gameScene.Player2Strikes.text = null;
-        gameScene.Player3Guilty.text = null;
-        gameScene.Player3Strikes.text = null;
+        clearTexts(gameScene.player);
         gameScene.socket.emit('Strike', 'user2');
       });
 
       gameScene.Player3Guilty.on('pointerdown', () => {
         console.log('Clicked on user3');
-        gameScene.Player2Guilty.text = null;
-        gameScene.Player2Strikes.text = null;
-        gameScene.Player3Guilty.text = null;
-        gameScene.Player3Strikes.text = null;
+        clearTexts(gameScene.player);
         gameScene.socket.emit('Strike', 'user3');
       });
     }
@@ -490,8 +506,13 @@ export default class Game extends Phaser.Scene {
         .setFont('Tithilum Web', 'Sans-serif')
         .setFontSize(18)
         .setColor('#0de');
+      if (lives === 0) {
+        gameOver(gameScene.players[gameScene.player]);
+        console.log('done');
+        return;
+      }
 
-      // Adds a text/button for drawing cards
+      // Adds a text/button for drawing card
       gameScene.dealText = gameScene.add
         .text(75, 350, ['Draw Card'])
         .setFont('Tithilum Web', 'Sans-serif')
@@ -502,6 +523,7 @@ export default class Game extends Phaser.Scene {
       // a player can only draw cards if it's that players turn
       gameScene.dealText.on('pointerdown', function () {
         if (playerId === onStand) {
+          console.log('on stand: ', gameScene.onStand);
           gameScene.dealCard();
         }
       });
@@ -617,6 +639,7 @@ export default class Game extends Phaser.Scene {
           console.log('secrete card:', gameScene.playerHand.evidenceCards[-1]);
           let playedCard = JSON.stringify(gameObject);
           let player = gameScene.player;
+          clearTexts(gameScene.player);
           gameScene.socket.emit('EvidenceDropped', { playedCard, player });
         }
 
@@ -676,6 +699,7 @@ export default class Game extends Phaser.Scene {
           gameScene.playerHand.blameCards[missingCard] = null;
           let playedCard = JSON.stringify(gameObject);
           let player = gameScene.player;
+          clearTexts(gameScene.player);
           gameScene.socket.emit('BlameDropped', { playedCard, player });
         }
 
@@ -693,6 +717,48 @@ export default class Game extends Phaser.Scene {
           // );
         }
       });
+    }
+
+    function clearTexts(player) {
+      if (player === 'user1') {
+        gameScene.Player2Guilty.text = null;
+        gameScene.Player3Guilty.text = null;
+        gameScene.Player2Strikes.text = null;
+        gameScene.Player3Strikes.text = null;
+        gameScene.lifeLabel.text = null;
+        gameScene.switchToPlayer2.text = null;
+        gameScene.switchToPlayer3.text = null;
+        gameScene.indicatorLabel.text = null;
+      } else {
+        gameScene.Life.text = null;
+        gameScene.dealText.text = null;
+      }
+      gameScene.playerLabel.text = null;
+      gameScene.evidenceDropZone.destroy();
+      gameScene.evidenceZone.fillColor = null;
+    }
+
+    function gameOver(loser) {
+      gameScene.turnIndicator.text = `${gameScene.players.user1.name} declaires ${loser.name} \n GUILTY, after 3 strikes.`;
+      gameScene.turnIndicator.setAlign('center');
+      clearTexts(gameScene.player);
+      gameScene.evidencePileLabel.text = null;
+      gameScene.blamePileLabel.text = null;
+      gameScene.playerLabel.text = gameScene.players[gameScene.player].name;
+      console.log('cleared text?');
+      gameScene.gameHeader = gameScene.add
+        .text(380, 350, [`GAME`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(24)
+        .setAlign('center')
+        .setColor('#7799bb');
+      gameScene.OverHeader = gameScene.add
+        .text(690, 350, [`OVER`])
+        .setFont('Tithilum Web', 'Sans-serif')
+        .setFontSize(24)
+        .setAlign('center')
+        .setColor('#7799bb');
+      console.log('printed game over?');
     }
   }
 
