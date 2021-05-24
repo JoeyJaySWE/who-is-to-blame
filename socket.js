@@ -72,8 +72,8 @@ module.exports = {
       });
 
       socket.on('EvidenceDropped', (evidence, player) => {
-        console.log(`Evidence dropped: ${evidence}`);
-        io.sockets.emit('EvidenceDropped', { evidence, player });
+        console.log(`Evidence dropped:`, evidence);
+        socket.broadcast.emit('EvidenceDropped', { evidence, player });
       });
 
       socket.on('BlameDropped', (blame, player) => {
