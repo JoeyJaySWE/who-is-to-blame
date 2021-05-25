@@ -239,7 +239,7 @@ export default class Game extends Phaser.Scene {
     });
 
     this.rulesText.on('pointerdown', () => {
-      let url = 'https://github.com/JoeyJaySWE/who-is-to-blame/tree/rules';
+      let url = 'https://github.com/JoeyJaySWE/who-is-to-blame';
       window.open(`${url}#rules`, '_blank');
     });
 
