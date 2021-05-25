@@ -40,14 +40,17 @@ export default class Game extends Phaser.Scene {
       user1: {
         name: 'user1',
         lives: null,
+        dealtCards: false,
       },
       user2: {
         name: 'user2',
         lives: 3,
+        dealtCards: false,
       },
       user3: {
         name: 'user3',
         lives: 3,
+        dealtCards: false,
       },
     };
     // which players turn is it
@@ -73,6 +76,7 @@ export default class Game extends Phaser.Scene {
     this.evidenceZone = new Zone(this, 300, 200, 240, 360, 'evidence');
     this.evidenceDropZone = this.evidenceZone.renderZone();
     this.outline = this.evidenceZone.renderOutline(this.evidenceDropZone);
+    // console.log(this.evidenceDropZone);
 
     // ---------------------------------------------------------------------
 
@@ -102,6 +106,16 @@ export default class Game extends Phaser.Scene {
       gameScene.onStand = accused;
       let player = gameScene.player;
       let playerData = gameScene.players[player];
+      console.log('evidence card: ', gameScene.playerHand.evidenceCards);
+      if (player === accused) {
+        if (hasNull(gameScene.playerHand.evidenceCards)) {
+          playerData.dealtCards = false;
+          console.log('no card dealt');
+        } else {
+          console.log('player already got card', playerData.dealtCards);
+        }
+      }
+
       // displayes the players name in lower left corner
       gameScene.playerLabel.text = playerData.name;
       console.log('new round', playerData.name);
@@ -155,6 +169,7 @@ export default class Game extends Phaser.Scene {
           )
           .disableInteractive();
         console.log({ card });
+        console.log(this.evidenceDropZone);
         console.log({ sprite });
       }
     });
@@ -251,14 +266,14 @@ export default class Game extends Phaser.Scene {
 
     this.dealCard = () => {
       for (let i = 0; i < 3; i++) {
-        if (this.playerHand.evidenceCards[i] != null) {
+        if (gameScene.playerHand.evidenceCards[i] != null) {
           continue;
         }
 
         let playerCard = new Card(this, 0.05, 'evidence');
 
         if (i === 1) {
-          this.playerHand.evidenceCards[i] = playerCard.render(
+          gameScene.playerHand.evidenceCards[i] = playerCard.render(
             300 + i * 100,
             670,
             'evidence'
@@ -330,6 +345,11 @@ export default class Game extends Phaser.Scene {
           }
         });
       }
+      gameScene.players[gameScene.player].dealtCards = true;
+      console.log(
+        'set dealt cards to true:',
+        gameScene.players[gameScene.player].dealtCards
+      );
     };
 
     this.socket.on('Strike', (guilty) => {
@@ -522,9 +542,15 @@ export default class Game extends Phaser.Scene {
 
       // a player can only draw cards if it's that players turn
       gameScene.dealText.on('pointerdown', function () {
-        if (playerId === onStand) {
-          console.log('on stand: ', gameScene.onStand);
+        console.log();
+        if (gameScene.players[gameScene.player].dealtCards === false) {
+          console.log('on stand: ', onStand);
           gameScene.dealCard();
+        } else {
+          console.log(
+            'deqalt card was true: ',
+            gameScene.players[gameScene.player].dealtCards
+          );
         }
       });
 
@@ -560,7 +586,7 @@ export default class Game extends Phaser.Scene {
         gameObject.setTint();
 
         //if card wasn't dropped in a zone, send it back to the hand
-        if (!dropped) {
+        if (!dropped || gameScene.onStand === 'No one') {
           if (gameObject.data.list.cardType === 'blame') {
             gameObject.scale = 0.1;
           } else {
@@ -591,7 +617,12 @@ export default class Game extends Phaser.Scene {
 
       // When we dropp the card in a pile
       gameScene.input.on('drop', function (pointer, gameObject) {
+        if (gameScene.onStand === 'No one') {
+          return;
+        }
         console.log('card dropepd');
+        // console.log(gameScene.evidenceDropZone);
+        console.log(gameScene.players[gameScene.player].dealtCards);
         //if we dropped in the Evidence pile
         if (
           gameObject.x > 299 &&
@@ -610,6 +641,7 @@ export default class Game extends Phaser.Scene {
           }
           console.log('added to evidence pile');
           gameObject.scale = 0.1;
+          console.log(gameScene.evidenceDropZone);
           gameScene.evidenceDropZone.data.values.cards++;
           gameScene.evidenceDropZone.data.values.cardData.push(gameObject);
           let pileTopCard =
@@ -641,6 +673,12 @@ export default class Game extends Phaser.Scene {
           let player = gameScene.player;
           clearTexts(gameScene.player);
           gameScene.socket.emit('EvidenceDropped', { playedCard, player });
+
+          console.log(
+            'dropped, still dealt?',
+            gameScene.players[gameScene.player].dealtCards
+          );
+          gameScene.players[gameScene.player].dealtCards = true;
         }
 
         // if droped in the Blame pile
@@ -734,7 +772,6 @@ export default class Game extends Phaser.Scene {
         gameScene.dealText.text = null;
       }
       gameScene.playerLabel.text = null;
-      gameScene.evidenceDropZone.destroy();
       gameScene.evidenceZone.fillColor = null;
     }
 
@@ -759,6 +796,20 @@ export default class Game extends Phaser.Scene {
         .setAlign('center')
         .setColor('#7799bb');
       console.log('printed game over?');
+    }
+
+    function hasNull(list) {
+      if (list.length === 0) {
+        return true;
+      }
+      let hasNull = false;
+      list.forEach((item) => {
+        console.log({ item });
+        if (item === null) {
+          hasNull = true;
+        }
+      });
+      return hasNull;
     }
   }
 
