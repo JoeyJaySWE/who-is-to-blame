@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1",
+    "socket.io": "^4.1.1"
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "name": "who-is-to-blame",
+  "description": "<p align=\"center\">   <img src=\"https://media.giphy.com/media/gLv5vBZCnbank4pfJe/giphy.gif\" alt=\"She did it!\" /> </p>",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoeyJaySWE/who-is-to-blame.git"
+  },
+  "author": "Joey Jay, Victor Stranne",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoeyJaySWE/who-is-to-blame/issues"
+  },
+  "homepage": "https://github.com/JoeyJaySWE/who-is-to-blame#readme"
+}
