@@ -8,7 +8,7 @@ module.exports = {
     io = socketIo(server, {
       pingTimeout: 60000,
       cors: {
-        origin: 'http://localhost:8080',
+        origin: 'https://who-is-to-blame-5f5fdrkm2-joeyjayswe.vercel.app/',
       },
     });
     let players = {
