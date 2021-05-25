@@ -44,6 +44,8 @@ export default class Game extends Phaser.Scene {
       player3: 3,
     };
 
+    this.objection = false;
+
     this.gameOver = false;
     this.players = {
       user1: {
@@ -168,21 +170,24 @@ export default class Game extends Phaser.Scene {
 
       // evidence = evidenceParsed[0];
 
-      if (gameScene.player !== presenter) {
-        console.log('Not player 2');
-        let sprite = evidence.textureKey;
+      let sprite = evidence.textureKey;
+      console.log({ sprite });
 
-        let card = new Card(gameScene, 1, 'evidence');
-        card
-          .render(
-            gameScene.evidenceDropZone.x + 120,
-            gameScene.evidenceDropZone.y + 180,
-            sprite
-          )
-          .disableInteractive();
-        console.log({ card });
-        console.log(this.evidenceDropZone);
-        console.log({ sprite });
+      let card = new Card(gameScene, 1, 'evidence');
+      card
+        .render(
+          gameScene.evidenceDropZone.x + 120,
+          gameScene.evidenceDropZone.y + 180,
+          sprite
+        )
+        .disableInteractive();
+      console.log({ card });
+      console.log(this.evidenceDropZone);
+      console.log({ sprite });
+
+      if (gameScene.objection === true) {
+        console.log('setting objection to false');
+        gameScene.objection = false;
       }
     });
 
@@ -195,19 +200,25 @@ export default class Game extends Phaser.Scene {
 
       // blame = blameParsed[0];
 
-      if (gameScene.player !== presenter) {
-        console.log('Not player 2');
-        let sprite = blame.textureKey;
+      console.log('Not the one who dropped');
+      let sprite = blame.textureKey;
 
-        let card = new Card(gameScene, 1, 'blame');
-        card
-          .render(
-            gameScene.blameDropZone.x + 120,
-            gameScene.blameDropZone.y + 180,
-            sprite
-          )
-          .disableInteractive();
-        console.log({ sprite });
+      let card = new Card(gameScene, 1, 'blame');
+      card
+        .render(
+          gameScene.blameDropZone.x + 120,
+          gameScene.blameDropZone.y + 180,
+          sprite
+        )
+        .disableInteractive();
+      console.log({ sprite });
+
+      if (
+        gameScene.player === presenter &&
+        gameScene.onStand !== gameScene.player &&
+        gameScene.objection === false
+      ) {
+        gameScene.objection = true;
       }
     });
 
@@ -641,7 +652,16 @@ export default class Game extends Phaser.Scene {
 
       // When we dropp the card in a pile
       gameScene.input.on('drop', function (pointer, gameObject) {
-        if (gameScene.onStand === 'No one') {
+        if (
+          (gameScene.onStand === 'No one' &&
+            gameObject.texture.key !== 'blame_stop' &&
+            gameScene.objection === false) ||
+          (gameScene.onStand !== gameScene.player &&
+            gameObject.texture.key !== 'blame_stop' &&
+            gameScene.objection === false)
+        ) {
+          console.log('not allowed to drop');
+          console.log(gameObject.texture.key);
           return;
         }
         console.log('card dropepd');
@@ -758,7 +778,9 @@ export default class Game extends Phaser.Scene {
           console.log('Bad card dropp: ', gameObject.x, ' x ', gameObject.y);
           let missingCard =
             gameScene.playerHand.blameCards.lastIndexOf(gameObject);
+          console.log('missing card inex', missingCard);
           gameScene.playerHand.blameCards[missingCard] = null;
+          console.log('blame card hand: ', gameScene.playerHand.blameCards);
           let playedCard = JSON.stringify(gameObject);
           let player = gameScene.player;
           clearTexts(gameScene.player);
