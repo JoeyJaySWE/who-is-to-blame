@@ -118,7 +118,10 @@ export default class Game extends Phaser.Scene {
       let playerData = gameScene.players[player];
       console.log('evidence card: ', gameScene.playerHand.evidenceCards);
       if (player === accused) {
-        if (hasNull(gameScene.playerHand.evidenceCards)) {
+        if (
+          hasNull(gameScene.playerHand.evidenceCards) ||
+          hasNull(gameScene.playerHand.blameCards)
+        ) {
           playerData.dealtCards = false;
           console.log('no card dealt');
         } else {
@@ -309,7 +312,8 @@ export default class Game extends Phaser.Scene {
       console.log('secrete card', gameScene.playerHand.evidenceCards[-1]);
 
       for (let i = 0; i < 3; i++) {
-        if (this.playerHand.blameCards[i] != null) {
+        if (gameScene.playerHand.blameCards[i] != null) {
+          console.log(gameScene.playerHand.blameCards[i]);
           continue;
         }
         let playerCard = new Card(this, 0.5, 'blame');
@@ -551,6 +555,7 @@ export default class Game extends Phaser.Scene {
             gameScene.players[gameScene.player].dealtCards
           );
         }
+        console.log('unkown', gameScene.players[gameScene.player].dealtCards);
       });
 
       // ------------[ Hover functions of the "draw card" text ]-------------------
