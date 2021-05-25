@@ -425,6 +425,7 @@ export default class Game extends Phaser.Scene {
       gameScene.switchToPlayer2.on('pointerdown', () => {
         gameScene.switchToPlayer2.setColor('#009900');
         gameScene.switchToPlayer3.setColor('#660066');
+        clearTexts(gameScene.player);
         gameScene.socket.emit('SwitchTurn', 'user2');
       });
 
