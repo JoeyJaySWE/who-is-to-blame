@@ -101,7 +101,7 @@ export default class Game extends Phaser.Scene {
 
 		//socket set up
 		this.socket = io.connect("https://who-is-to-blame.herokuapp.com/", {
-			transport: ["websocket"],
+			origin: "https://who-is-to-blame.netlify.app/",
 		});
 
 		// let gameSetup = new GameSetUp(this, this.socket);
