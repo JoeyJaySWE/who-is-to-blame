@@ -1,6 +1,5 @@
 import Card from '../helpers/card';
 import Zone from '../helpers/zone';
-import GameSetUp from '../helpers/hostSetup';
 import io from 'socket.io-client';
 // import socket from '../../../socket';
 
@@ -210,6 +209,27 @@ export default class Game extends Phaser.Scene {
           .disableInteractive();
         console.log({ sprite });
       }
+    });
+
+    this.rulesText = gameScene.add
+      .text(70, 50, [`Rules`])
+      .setFont('Tithilum Web', 'Sans-serif')
+      .setFontSize(24)
+      .setAlign('center')
+      .setColor('#aa00cc')
+      .setInteractive();
+
+    this.rulesText.on('pointerover', () => {
+      gameScene.rulesText.setColor('#ff00ff');
+    });
+
+    this.rulesText.on('pointerout', () => {
+      gameScene.rulesText.setColor('#aa00cc');
+    });
+
+    this.rulesText.on('pointerdown', () => {
+      let url = 'https://github.com/JoeyJaySWE/who-is-to-blame/tree/rules';
+      window.open(`${url}#rules`, '_blank');
     });
 
     this.evidencePileLabel = this.add
