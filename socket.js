@@ -9,6 +9,7 @@ module.exports = {
       pingTimeout: 60000,
       cors: {
         origin: 'https://who-is-to-blame.netlify.app/',
+        allowedHeaders: ['79kP9GCzrBP93meWdDyTunQt.v'],
       },
     });
     let players = {
