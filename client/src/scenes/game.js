@@ -608,11 +608,7 @@ export default class Game extends Phaser.Scene {
         gameObject.setTint(0xff69ba);
 
         //scales card based on type (had old cards that had different sizes)
-        if (gameObject.data.list.cardType === 'blame') {
-          gameObject.scale = 1;
-        } else {
-          gameObject.scale = 1;
-        }
+        gameObject.scale = 1;
         gameScene.children.bringToTop(gameObject);
       });
 
@@ -621,12 +617,12 @@ export default class Game extends Phaser.Scene {
         gameObject.setTint();
 
         //if card wasn't dropped in a zone, send it back to the hand
-        if (!dropped || gameScene.onStand === 'No one') {
-          if (gameObject.data.list.cardType === 'blame') {
-            gameObject.scale = 0.5;
-          } else {
-            gameObject.scale = 0.5;
-          }
+        if (
+          !dropped ||
+          (gameScene.onStand === 'No one' &&
+            gameObject.texture.key !== 'blame_stop')
+        ) {
+          gameObject.scale = 0.5;
           gameObject.x = gameObject.input.dragStartX;
           gameObject.y = gameObject.input.dragStartY;
         }
@@ -653,15 +649,16 @@ export default class Game extends Phaser.Scene {
       // When we dropp the card in a pile
       gameScene.input.on('drop', function (pointer, gameObject) {
         if (
-          (gameScene.onStand === 'No one' &&
-            gameObject.texture.key !== 'blame_stop' &&
-            gameScene.objection === false) ||
+          gameScene.onStand === 'No one' ||
           (gameScene.onStand !== gameScene.player &&
             gameObject.texture.key !== 'blame_stop' &&
             gameScene.objection === false)
         ) {
           console.log('not allowed to drop');
           console.log(gameObject.texture.key);
+          gameObject.scale = 0.5;
+          gameObject.x = gameObject.input.dragStartX;
+          gameObject.y = gameObject.input.dragStartY;
           return;
         }
         console.log('card dropepd');
