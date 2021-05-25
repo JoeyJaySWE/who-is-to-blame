@@ -100,7 +100,7 @@ export default class Game extends Phaser.Scene {
     // --------------------------------------------------------------------
 
     //socket set up
-    this.socket = io.connect('http://localhost:3000');
+    this.socket = io.connect('https://who-is-to-blame.herokuapp.com/');
     // let gameSetup = new GameSetUp(this, this.socket);
 
     // IF PLAYER JOIN
