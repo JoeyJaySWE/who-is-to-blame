@@ -18,6 +18,16 @@ export default class Game extends Phaser.Scene {
     this.load.image('life1', 'src/assets/life1.png');
     this.load.image('life2', 'src/assets/life2.png');
     this.load.image('life3', 'src/assets/life3.png');
+    this.load.image('evidence1', 'src/assets/evidence1.png');
+    this.load.image('evidence2', 'src/assets/evidence2.png');
+    this.load.image('evidence3', 'src/assets/evidence3.png');
+    this.load.image('evidence4', 'src/assets/evidence4.png');
+    this.load.image('evidence5', 'src/assets/evidence5.png');
+    this.load.image('evidence6', 'src/assets/evidence6.png');
+    this.load.image('evidence7', 'src/assets/evidence7.png');
+    this.load.image('evidence8', 'src/assets/evidence8.png');
+    this.load.image('blame_point', 'src/assets/blame_point.png');
+    this.load.image('blame_stop', 'src/assets/blame_stop.png');
   }
 
   create() {
@@ -160,7 +170,7 @@ export default class Game extends Phaser.Scene {
         console.log('Not player 2');
         let sprite = evidence.textureKey;
 
-        let card = new Card(gameScene, 0.1, 'evidence');
+        let card = new Card(gameScene, 1, 'evidence');
         card
           .render(
             gameScene.evidenceDropZone.x + 120,
@@ -187,7 +197,7 @@ export default class Game extends Phaser.Scene {
         console.log('Not player 2');
         let sprite = blame.textureKey;
 
-        let card = new Card(gameScene, 0.19, 'blame');
+        let card = new Card(gameScene, 1, 'blame');
         card
           .render(
             gameScene.blameDropZone.x + 120,
@@ -270,38 +280,18 @@ export default class Game extends Phaser.Scene {
           continue;
         }
 
-        let playerCard = new Card(this, 0.05, 'evidence');
-
-        if (i === 1) {
-          gameScene.playerHand.evidenceCards[i] = playerCard.render(
-            300 + i * 100,
-            670,
-            'evidence'
-          );
-          gameScene.playerHand.evidenceCards[i].on('pointerover', function () {
-            this.scale = 0.075;
-            gameScene.children.bringToTop(this);
-          });
-
-          gameScene.playerHand.evidenceCards[i].on('pointerout', function () {
-            if (
-              this.x !== gameScene.evidenceDropZone.x + 120 &&
-              this.y !== gameScene.evidenceDropZone.y + 180
-            ) {
-              this.scale = 0.05;
-            }
-          });
-          continue;
-        }
+        let cardImage = 'evidence' + (Math.floor(Math.random() * 8) + 1);
+        console.log(cardImage);
+        let playerCard = new Card(this, 0.5, 'evidence');
 
         this.playerHand.evidenceCards[i] = playerCard.render(
           300 + i * 100,
           670,
-          'backside'
+          cardImage
         );
 
         gameScene.playerHand.evidenceCards[i].on('pointerover', function () {
-          this.scale = 0.075;
+          this.scale = 0.75;
           gameScene.children.bringToTop(this);
         });
 
@@ -310,7 +300,7 @@ export default class Game extends Phaser.Scene {
             this.x !== gameScene.evidenceDropZone.x + 120 &&
             this.y !== gameScene.evidenceDropZone.y + 180
           ) {
-            this.scale = 0.05;
+            this.scale = 0.5;
           }
         });
       }
@@ -322,17 +312,25 @@ export default class Game extends Phaser.Scene {
         if (this.playerHand.blameCards[i] != null) {
           continue;
         }
-        let playerCard = new Card(this, 0.1, 'blame');
+        let playerCard = new Card(this, 0.5, 'blame');
+        let blameCardName;
+        let blameInt = Math.floor(Math.random() * 20) + 10;
+        console.log(`blameInt number is: ${blameInt}`);
+        if (blameInt % 2 === 0) {
+          blameCardName = 'blame_stop';
+        } else {
+          blameCardName = 'blame_point';
+        }
 
         let spacing = this.playerHand.evidenceCards.length * 100;
         this.playerHand.blameCards[i] = playerCard.render(
           300 + (i * 100 + spacing),
           670,
-          'blame'
+          blameCardName
         );
 
         gameScene.playerHand.blameCards[i].on('pointerover', function () {
-          this.scale = 0.145;
+          this.scale = 0.75;
           gameScene.children.bringToTop(this);
         });
 
@@ -341,7 +339,7 @@ export default class Game extends Phaser.Scene {
             this.x !== gameScene.blameDropZone.x + 120 &&
             this.y !== gameScene.blameDropZone.y + 180
           ) {
-            this.scale = 0.1;
+            this.scale = 0.5;
           }
         });
       }
@@ -427,6 +425,7 @@ export default class Game extends Phaser.Scene {
       gameScene.switchToPlayer2.on('pointerdown', () => {
         gameScene.switchToPlayer2.setColor('#009900');
         gameScene.switchToPlayer3.setColor('#660066');
+        clearTexts(gameScene.player);
         gameScene.socket.emit('SwitchTurn', 'user2');
       });
 
@@ -574,9 +573,9 @@ export default class Game extends Phaser.Scene {
 
         //scales card based on type (had old cards that had different sizes)
         if (gameObject.data.list.cardType === 'blame') {
-          gameObject.scale = 0.19;
+          gameObject.scale = 1;
         } else {
-          gameObject.scale = 0.1;
+          gameObject.scale = 1;
         }
         gameScene.children.bringToTop(gameObject);
       });
@@ -588,9 +587,9 @@ export default class Game extends Phaser.Scene {
         //if card wasn't dropped in a zone, send it back to the hand
         if (!dropped || gameScene.onStand === 'No one') {
           if (gameObject.data.list.cardType === 'blame') {
-            gameObject.scale = 0.1;
+            gameObject.scale = 0.5;
           } else {
-            gameObject.scale = 0.05;
+            gameObject.scale = 0.5;
           }
           gameObject.x = gameObject.input.dragStartX;
           gameObject.y = gameObject.input.dragStartY;
@@ -634,13 +633,13 @@ export default class Game extends Phaser.Scene {
           // if we dropped a Blame card in the evidence pile, send it back to hand
           if (gameObject.data.list.cardType !== 'evidence') {
             console.log(`card wasn't evidence`);
-            gameObject.scale = 0.1;
+            gameObject.scale = 0.5;
             gameObject.x = gameObject.input.dragStartX;
             gameObject.y = gameObject.input.dragStartY;
             return;
           }
           console.log('added to evidence pile');
-          gameObject.scale = 0.1;
+          gameObject.scale = 1;
           console.log(gameScene.evidenceDropZone);
           gameScene.evidenceDropZone.data.values.cards++;
           gameScene.evidenceDropZone.data.values.cardData.push(gameObject);
@@ -697,7 +696,7 @@ export default class Game extends Phaser.Scene {
               ' x ',
               gameObject.y
             );
-            gameObject.scale = 0.05;
+            gameObject.scale = 1;
             console.log(
               'card start x:',
               gameObject.input.dragStartX,
@@ -708,7 +707,7 @@ export default class Game extends Phaser.Scene {
             gameObject.y = gameObject.input.dragStartY;
             return;
           }
-          gameObject.scale = 0.19;
+          gameObject.scale = 1;
           gameScene.blameDropZone.data.values.cards++;
           gameScene.blameDropZone.data.values.cardData.push(gameObject);
           let pileTopCard =
@@ -742,8 +741,7 @@ export default class Game extends Phaser.Scene {
         }
 
         if (gameObject.data.list.cardType === 'blame') {
-          gameObject.scale = 0.19;
-          console.log('Tricked');
+          gameObject.scale = 1;
           gameScene.blameDropZone.data.values.cardData.push(gameObject);
           let pileTopCard =
             gameScene.blameDropZone.data.values.cardData.length - 1;
