@@ -101,9 +101,7 @@ export default class Game extends Phaser.Scene {
 
 		//socket set up
 		this.socket = io.connect("https://who-is-to-blame.herokuapp.com/", {
-			extraHeaders: {
-				"79kP9GCzrBP93meWdDyTunQt.v": "true",
-			},
+			transport: ["websocket"],
 		});
 
 		// let gameSetup = new GameSetUp(this, this.socket);
