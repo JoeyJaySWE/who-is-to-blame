@@ -33,12 +33,12 @@ You find yourself standing in front of a corrupt and narcissistic person who’l
 The first one to unter the site will be appointed the Judge,
 The others will be referred to as user2 and user3. Make sure that the one that’s to play the Judge has connected fully before entering the page yourselves.
  
-At the top of the screen in red you’ll find the indicator for who’s to take the stand (who’s turn it is). At the beginning no one has the stand, which allows you all to draw your evidence and blame cards by pressing the ‘Draw Cards’ button. The evidence cards has a title, a description and an image. You are free to use either of the three sections to tell your testimony of what happened. 
+At the top of the screen in red you’ll find the indicator for who’s to take the stand (who’s turn it is). At the beginning no one has the stand, which allows you all to draw your evidence and blame cards by pressing the ‘Draw Cards’ button. The evidence card has a title, a description and an image. You are free to use either of the three sections to tell your testimony of what happened. 
 The hands are your blame cards. A pointing finger is used together with an evidence card to shift the blame to your opponent.
-A open hand is an OBJECTION card which you use to interrupt the testimony of another and throw 1 more evidence card to interrupt the person. The one on the stand has to adjust his story accordingly, and quickly or earn himself a strike from the Judge.
+An open hand is an OBJECTION card which you use to interrupt the testimony of another and throw 1 more evidence card to interrupt the person. The one on the stand has to adjust his story accordingly, and quickly or earn himself a strike from the Judge.
  
 <h3> The Judge </h3>
-The Judge is the God in this game. He can question any motive, add his own views as to what happened and doesn’t need blame or evidence cards to do so. He select which player takes the stand by clicking on either ‘Player 2’ or ‘Player 3’ above the piles. In order to deliver a strike, he clicks the player underneath the piles. Where he’ll also be able to keep track of the number of strikes they’ve received.
+The Judge is the God in this game. He can question any motive, add his own views as to what happened and doesn’t need blame or evidence cards to do so. He selects which player takes the stand by clicking on either ‘Player 2’ or ‘Player 3’ above the piles. In order to deliver a strike, he clicks the player underneath the piles. Where he’ll also be able to keep track of the number of strikes they’ve received.
  
 <h4> The Strikes </h4>
 The Judge can deliver strikes based on any of the reasons listed below:
@@ -53,14 +53,14 @@ The Judge can deliver strikes based on any of the reasons listed below:
 </ul>
  
 <h3> The Rounds </h3>
-The Judge begins by declaring what crime they are suspects of, then decide which player takes the stand first while all player draws their cards.
+The Judge begins by declaring what crime they are suspects of, then decides which player takes the stand first while all players draw their cards.
 
-The player that takes the stands tells his story of innocence using the evidence cards he’s gotten from the pile. Answer the Judges question and finishes by adding a pointing card and an evidence to shift that blame over to the other player.
+The player that takes the stands tells his story of innocence using the evidence cards he’s gotten from the pile. Answer the Judges question and finish by adding a pointing card and an evidence to shift that blame over to the other player.
 
-Judge switches to the other players turn.
-The next player takes the stand and repeat the process. If the player who ain’t on the stand drops an objection card, he can add another piece of evidence to try and make holes in the accused testimony. Howeve, he can’t draw any new cards until it’s his trun to take the stand.
+Judge switches to the other player's turn.
+The next player takes the stand and repeats the process. If the player who ain’t on the stand drops an objection card, he can add another piece of evidence to try and make holes in the accused testimony. However, he can’t draw any new cards until it’s his turn to take the stand.
 
-Ones it’s his turn again, he draws 1 new evidence card and 1 new blame card from the pile. And the process continues until a player received 3 strikes and is executed.
+Once it’s his turn again, he draws 1 new evidence card and 1 new blame card from the pile. And the process continues until a player receives 3 strikes and is executed.
 
 </p>
 
