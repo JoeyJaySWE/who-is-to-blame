@@ -21,7 +21,12 @@ OBS! require 3rd party chat program of your choosing to handle conversations, or
 
 <a href="https://www.figma.com/file/AS24qhmaGpnj5Vo77Xpedh/Who-s-To-Blame?node-id=0%3A1" target="_blank">Concept Arts</a>
 
+<h2 id='rules'>The Rules</h2>
+<p> your best to prove your innocence and push the blame on your friend, however,
+if the judge catches you in a contradiction, or lie, the scales of justice may shift its
+eyes to look at you instead.
 # Installation
+</p>
 
 Add the installation instructions.
 
