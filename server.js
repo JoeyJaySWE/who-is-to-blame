@@ -9,9 +9,7 @@ const http = require('http').createServer(server);
 //     });
 // });
 
-const port = process.env.PORT || 8000
-
-const serverListner = http.listen(port, () => {
+const serverListner = http.listen(3000, () => {
   console.log('Server started up');
 });
 

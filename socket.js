@@ -1,12 +1,15 @@
-const socketIo,{Server} = require('socket.io');
+const socketIo = require('socket.io');
 
 let io;
 let userCounter = 1;
 
 module.exports = {
   init: (server) => {
-   io = new Server(httpServer, {
-      cors: { origin: '*' },
+    io = socketIo(server, {
+      pingTimeout: 60000,
+      cors: {
+        origin: 'http://localhost:8080',
+      },
     });
     let players = {
       hostName: '',
