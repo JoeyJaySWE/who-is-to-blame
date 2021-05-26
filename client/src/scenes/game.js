@@ -25,6 +25,16 @@ export default class Game extends Phaser.Scene {
     this.load.image("evidence6", "src/assets/evidence6.png");
     this.load.image("evidence7", "src/assets/evidence7.png");
     this.load.image("evidence8", "src/assets/evidence8.png");
+    this.load.image("evidence9", "src/assets/evidence9.png");
+    this.load.image("evidence10", "src/assets/evidence10.png");
+    this.load.image("evidence11", "src/assets/evidence11.png");
+    this.load.image("evidence12", "src/assets/evidence12.png");
+    this.load.image("evidence13", "src/assets/evidence13.png");
+    this.load.image("evidence14", "src/assets/evidence14.png");
+    this.load.image("evidence15", "src/assets/evidence15.png");
+    this.load.image("evidence16", "src/assets/evidence16.png");
+    this.load.image("evidence17", "src/assets/evidence17.png");
+    this.load.image("evidence18", "src/assets/evidence18.png");
     this.load.image("blame_point", "src/assets/blame_point.png");
     this.load.image("blame_stop", "src/assets/blame_stop.png");
   }
@@ -100,7 +110,7 @@ export default class Game extends Phaser.Scene {
     // --------------------------------------------------------------------
 
     //socket set up
-    this.socket = io.connect("https://who-is-to-blame.herokuapp.com/");
+    this.socket = io.connect("http://localhost:3000");
     // let gameSetup = new GameSetUp(this, this.socket);
 
     // IF PLAYER JOIN
@@ -314,7 +324,7 @@ export default class Game extends Phaser.Scene {
           continue;
         }
 
-        let cardImage = "evidence" + (Math.floor(Math.random() * 8) + 1);
+        let cardImage = "evidence" + (Math.floor(Math.random() * 18) + 1);
         console.log(cardImage);
         let playerCard = new Card(this, 0.5, "evidence");
 
