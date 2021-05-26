@@ -1,15 +1,12 @@
-const socketIo = require('socket.io');
+const socketIo,{Server} = require('socket.io');
 
 let io;
 let userCounter = 1;
 
 module.exports = {
   init: (server) => {
-    io = socketIo(server, {
-      pingTimeout: 60000,
-      cors: {
-        origin: 'https://who-is-to-blame.netlify.app/',
-      },
+   io = new Server(httpServer, {
+      cors: { origin: '*' },
     });
     let players = {
       hostName: '',
