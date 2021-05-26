@@ -111,10 +111,7 @@ export default class Game extends Phaser.Scene {
 
 		//socket set up
 		const socket = io("https://who-is-to-blame.herokuapp.com/", {
-			withCredentials: true,
-			extraHeaders: {
-				"my-custom-header": "abcd",
-			},
+			orgin: "https://who-is-to-blame.netlify.app/",
 		});
 		// let gameSetup = new GameSetUp(this, this.socket);
 
