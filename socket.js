@@ -6,17 +6,10 @@ let userCounter = 1;
 module.exports = {
   init: (server) => {
     io = socketIo(server, {
-        pingTimeout: 600000,
-        origins: ['https://who-is-to-blame.netlify.app/'],
-        handlePreflightRequest: (req, res) => {
-          res.writeHead(200, {
-            "Access-Control-Allow-Origin": "https://who-is-to-blame.netlify.app/",
-          });
-        }
-    //   pingTimeout: 60000,
-    //   cors: {
-    //   origins: ['https://who-is-to-blame.netlify.app/'],
-    //   },
+      pingTimeout: 60000,
+      cors: {
+        origin: 'https://who-is-to-blame.netlify.app/',
+      },
     });
     let players = {
       hostName: '',
