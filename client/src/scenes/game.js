@@ -113,6 +113,7 @@ export default class Game extends Phaser.Scene {
 		this.socket = io("https://who-is-to-blame.herokuapp.com/", {
 			orgin: "https://who-is-to-blame.netlify.app/",
 		});
+
 		// let gameSetup = new GameSetUp(this, this.socket);
 
 		// IF PLAYER JOIN
@@ -326,7 +327,9 @@ export default class Game extends Phaser.Scene {
 					continue;
 				}
 
+
 				let cardImage = "evidence" + (Math.floor(Math.random() * 18) + 1);
+
 				console.log(cardImage);
 				let playerCard = new Card(this, 0.5, "evidence");
 
