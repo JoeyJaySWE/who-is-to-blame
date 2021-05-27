@@ -8,7 +8,7 @@ module.exports = {
     io = socketIo(server, {
       pingTimeout: 60000,
       cors: {
-        origin: 'https://who-is-to-blame.netlify.app/',
+        origin: 'http://localhost:8080',
       },
     });
     let players = {
