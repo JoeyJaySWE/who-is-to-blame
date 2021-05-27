@@ -70,29 +70,40 @@ Add the installation instructions.
 
 # Changelog
 
-- [#1 - Add a link to each pull request with a descriptive line.](#1)
+- [#1 - Initial setup](https://github.com/JoeyJaySWE/who-is-to-blame/pull/6)
+- [#2 - Added cards functionality](https://github.com/JoeyJaySWE/who-is-to-blame/pull/7)
+- [#3 - Additional hover card funcionality](https://github.com/JoeyJaySWE/who-is-to-blame/pull/8)
+- [#4 - Adding views](https://github.com/JoeyJaySWE/who-is-to-blame/pull/9)
+- [#5 - Lives working in views](https://github.com/JoeyJaySWE/who-is-to-blame/pull/10)
+- [#6 - Game over screen and full room screen](https://github.com/JoeyJaySWE/who-is-to-blame/pull/11)
+- [#7 - Added card pictures](https://github.com/JoeyJaySWE/who-is-to-blame/pull/12)
+- [#8 - Additional draw cards functionality](https://github.com/JoeyJaySWE/who-is-to-blame/pull/13)
+- [#9 - Picture scaling](https://github.com/JoeyJaySWE/who-is-to-blame/pull/14)
+- [#10 - Draw card bug fixes](https://github.com/JoeyJaySWE/who-is-to-blame/pull/15)
+- [#11 - Game rules added](https://github.com/JoeyJaySWE/who-is-to-blame/pull/16)
+- [#12 - Bug fixes](https://github.com/JoeyJaySWE/who-is-to-blame/pull/17)
 
 # Code Review
 
-1. ```dealer.js``` is empty, remove if not needed
+1. `dealer.js` is empty, remove if not needed
 
-2. ```hostSetup.js:70-118``` should delete unused code
+2. `hostSetup.js:70-118` should delete unused code
 
-3. ```game.js:576``` the pointer parameter is not used, maybe remove it
+3. `game.js:576` the pointer parameter is not used, maybe remove it
 
-4. ```game.js:654-659,721-726,753-758```should remove unused code
+4. `game.js:654-659,721-726,753-758`should remove unused code
 
-5. ```assets``` found it strange to have styles in assets folder. 
+5. `assets` found it strange to have styles in assets folder.
 
-6. ```game.js``` the whole game in create() and all the functions. I would split up functions outside the game.
+6. `game.js` the whole game in create() and all the functions. I would split up functions outside the game.
 
-7. ```game.js:819``` update function is not being used so think about removing it or use it
+7. `game.js:819` update function is not being used so think about removing it or use it
 
-8. ```game.js:173 & game.js:204``` you have declared sprite twice. Same with card. You seem to redeclare within sockets. Is this necessary?
+8. `game.js:173 & game.js:204` you have declared sprite twice. Same with card. You seem to redeclare within sockets. Is this necessary?
 
-9. ```game.js:765-768``` camel case is used everywhere in the code but here pascal case is being used instead, why?
+9. `game.js:765-768` camel case is used everywhere in the code but here pascal case is being used instead, why?
 
-10. ```game.js:718``` this variable is never used, maybe remove it
+10. `game.js:718` this variable is never used, maybe remove it
 
 We couldn't test the game so make sure to add instructions for the installation.
 
